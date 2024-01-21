@@ -1,4 +1,4 @@
-Data cms.study_cohort;
+Data cms.analytical_cohort;
 Set cms.no_prior_pd;
 Supp_end = srvc_dt + days_suply_num;
 run;
