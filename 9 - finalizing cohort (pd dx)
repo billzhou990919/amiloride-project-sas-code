@@ -97,8 +97,16 @@ set cms.study_cohort_v2;
 if clm_from_dt ne . then pd = 1;
 run;
 
-data cms.study_cohort_v2;
+data cms.study_cohort_v2; 
     set cms.study_cohort_v2;
-    /* Calculate surv_time based on conditions */
-    surv_time = min;
+    study_end = 21914;
+    censor_date = min(of discontinuation change_start clm_from_dt study_end);
+    format censor_date discontinuation index_date change_start clm_from_dt MMDDYY10.; 
 run;
+
+/*calculate survival time*/
+data cms.study_cohort_v2; 
+    set cms.study_cohort_v2;
+    survival_time = censor_date - index_date;
+run;
+
