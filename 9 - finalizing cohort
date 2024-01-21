@@ -1,17 +1,17 @@
 Data cms.analytical_cohort;
-Set cms.no_prior_pd;
+Set cms.all_drug_claims;
 Supp_end = srvc_dt + days_suply_num;
 run;
 
 proc sql;
     create table max_supp_end as
     select bene_id, max(supp_end) as discontinuation
-    from cms.study_cohort
+    from cms.analytical_cohort
     group by bene_id;
 quit;
 
 /* Step 2: Merge the max value with the original dataset */
-data cms.study_cohort;
+data cms.analytical_cohort;
     merge cms.study_cohort(in=a) max_supp_end(in=b);
     by bene_id;
 
