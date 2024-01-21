@@ -1,0 +1,55 @@
+Data cms.study_cohort;
+Set cms.no_prior_pd;
+Supp_end = srvc_dt + days_suply_num;
+run;
+
+proc sql;
+    create table max_supp_end as
+    select bene_id, max(supp_end) as discontinuation
+    from cms.study_cohort
+    group by bene_id;
+quit;
+
+/* Step 2: Merge the max value with the original dataset */
+data cms.study_cohort;
+    merge cms.study_cohort(in=a) max_supp_end(in=b);
+    by bene_id;
+
+    /* Keep all rows from the original dataset */
+    if a;
+run;
+
+/* Optional: Cleanup by deleting the temporary table */
+proc datasets library=work nolist;
+    delete max_supp_end;
+run;
+Quit;
+
+
+proc sql;
+    create table cms.analytical_cohort as
+    select distinct bene_id, 
+           gndr_cd,
+           amiloride, 
+           index_date, 
+           birth_date, 
+           earliest_pd, 
+           discontinuation, 
+           pd
+    from cms.study_cohort;
+quit;
+
+
+proc sql;
+    select count(distinct bene_id) as unique_bene_count
+    from cms.analytical_cohort;
+Quit;
+
+
+
+data cms.analytical_cohort;
+    set cms.analytical_cohort_nodup;
+    /* Calculate surv_time based on conditions */
+    if earliest_pd ne . then surv_time = earliest_pd - index_date;
+    else surv_time = discontinuation - index_date;
+run;
