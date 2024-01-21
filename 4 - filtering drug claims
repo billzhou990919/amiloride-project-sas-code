@@ -18,7 +18,7 @@ run;
 
 data cms.all_drug_claims;
    set cms.all_drug_claims;
-   by enrolid;
+   by bene_id;
 
    /* Retain the previous drug and change_start */
    retain prev_drug change_start change_flag;
