@@ -49,26 +49,56 @@ proc sql;
 quit;
 
 /*getting pd indicator and dx time*/
-data cms.study_cohort;
-    set cms.study_cohort;
-    pd = .;  /* Initialize pd to missing */
-    pd_time = .;  /* Initialize pd_time to missing */
+proc sort data=cms.all_parkinson; by bene_id; run;
+
+/* Merge the summary dataset with all_bleeding based on enrolid */
+data cms.merged_dataset;
+    merge cms.study_cohort(in=a) cms.all_parkinson(in=b);
+    by bene_id;
+    if a and b; /* This keeps only the matched records */
 run;
+
+/* Filter the rows based on the date conditions and create a new dataset */
+data cms.adverse_event;
+    set cms.merged_dataset;
+    format index_date discontinuation clm_from_dt mmddyy10.; /* Ensure dates are in the correct format */
+    if clm_from_dt >= index_date;
+Run;
+
+Proc datasets library=cms nolist;
+Delete merged_dataset;
+Run;
+
+/*only keeping the first bleeding event*/
+/* Sort the dataset by enrolid and admdate */
+proc sort data=cms.adverse_event;
+    by bene_id clm_from_dt;
+run;
+
+/* Keep only the first occurrence of each enrolid (i.e., the row with the earliest admdate) */
+data cms.adverse_event; 
+    set cms.adverse_event;
+    by bene_id;
+    if first.bene_id;
+run;
+
+
+
 proc sql;
     create table cms.study_cohort_v2 as
-    select a.bene_id, 
-           case when b.clm_from_dt > a.index_date then 1 else a.pd end as pd,
-           case when b.clm_from_dt > a.index_date then b.clm_from_dt else a.pd_time end as pd_time
+    select a.*, b.clm_from_dt
     from cms.study_cohort as a
-    left join cms.all_parkinson as b
+    left join cms.adverse_event as b
     on a.bene_id = b.bene_id;
 quit;
 
+data cms.study_cohort_v2;
+set cms.study_cohort_v2;
+if clm_from_dt ne . then pd = 1;
+run;
 
-
-data cms.analytical_cohort;
-    set cms.analytical_cohort_nodup;
+data cms.study_cohort_v2;
+    set cms.study_cohort_v2;
     /* Calculate surv_time based on conditions */
-    if earliest_pd ne . then surv_time = earliest_pd - index_date;
-    else surv_time = discontinuation - index_date;
+    surv_time = min;
 run;
