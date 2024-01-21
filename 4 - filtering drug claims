@@ -46,3 +46,42 @@ data cms.all_drug_claims;
    /* Keep only the necessary variables in the new dataset */
    drop prev_drug change_flag;
 run;
+
+/*create a list of unique bene_id with switching date and indicator*/
+data cms.unique_drug_user_switching;
+   set cms.all_drug_claims;
+   by bene_id;
+
+   /* Retain only the last row for each bene_id */
+   if last.bene_id then output;
+run;
+
+/*only keeping the first drug period*/
+data cms.all_drug_claims_first_period;
+    set cms.all_drug_claims;
+    by bene_id;
+    if change_start = . then output;
+run;
+
+/*deleting those with only one claims of amilordie or other diuretics*/
+proc sql;
+    create table cms.multiple_rows as
+    select bene_id
+    from cms.all_drug_claims_first_period
+    group by bene_id
+    having count(bene_id) > 1;
+quit;
+
+
+data cms.more_than_one_claims;
+    merge cms.all_drug_claims_first_period(in=a) cms.multiple_rows(in=b);
+    by bene_id;
+    if a and b;
+run;
+
+
+proc datasets library=cms nolist;
+    delete multiple_rows;
+run;
+Quit;
+
