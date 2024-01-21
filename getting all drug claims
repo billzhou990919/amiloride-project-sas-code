@@ -1,0 +1,70 @@
+/*getting all amiloride claims in 2014*/
+data cms.all_amiloride_2014;
+    set partd14.pde_file_2014(keep=bene_id dob_dt gndr_cd srvc_dt qty_dspnsd_num days_suply_num bn gnn formulary_id frmlry_rx_id);
+    where upcase(bn) in: ('AMILORIDE', 'MIDAMOR') or upcase(gnn) in: ('AMILORIDE', 'MIDAMOR');
+Run;
+/*getting all amiloride claims in 2015*/
+data cms.all_amiloride_2015;
+    set partd15.pde_file_2015(keep=bene_id dob_dt gndr_cd srvc_dt qty_dspnsd_num days_suply_num bn gnn formulary_id frmlry_rx_id);
+    where upcase(bn) in: ('AMILORIDE', 'MIDAMOR') or upcase(gnn) in: ('AMILORIDE', 'MIDAMOR');
+Run;
+/*getting all amiloride claims in 2016*/
+data cms.all_amiloride_20162;
+    set partd16.pde_file_2016(keep=bene_id dob_dt gndr_cd srvc_dt qty_dspnsd_num days_suply_num bn gnn formulary_id frmlry_rx_id);
+    where upcase(bn) in: ('AMILORIDE', 'MIDAMOR') or upcase(gnn) in: ('AMILORIDE', 'MIDAMOR');
+Run;
+/*getting all amiloride claims in 2017*/
+data cms.all_amiloride_2017;
+    set partd17.pde_file_2017(keep=bene_id dob_dt gndr_cd srvc_dt qty_dspnsd_num days_suply_num bn gnn formulary_id frmlry_rx_id);
+    where upcase(bn) in: ('AMILORIDE', 'MIDAMOR') or upcase(gnn) in: ('AMILORIDE', 'MIDAMOR');
+run;
+/*getting all amiloride claims in 2018*/
+data cms.all_amiloride_2018;
+    set partd18.pde_file_2018(keep=bene_id dob_dt gndr_cd srvc_dt qty_dspnsd_num days_suply_num bn gnn formulary_id frmlry_rx_id);
+    where upcase(bn) in: ('AMILORIDE', 'MIDAMOR') or upcase(gnn) in: ('AMILORIDE', 'MIDAMOR');
+Run;
+
+/*getting all amiloride claims in 2019*/
+data cms.all_amiloride_2019;
+    set partd19.pde_file_2019(keep=bene_id dob_dt gndr_cd srvc_dt qty_dspnsd_num days_suply_num bn gnn formulary_id frmlry_rx_id);
+    where upcase(bn) in: ('AMILORIDE', 'MIDAMOR') or upcase(gnn) in: ('AMILORIDE', 'MIDAMOR');
+Run;
+
+
+/*getting all other diuretics claims in 2014*/
+data cms.all_diuretics_2014;
+    set partd14.pde_file_2014(keep=bene_id dob_dt gndr_cd srvc_dt qty_dspnsd_num days_suply_num bn gnn formulary_id frmlry_rx_id);
+    where upcase(bn) in: ('EPLERENONE', 'INSPRA', ‘SPIRONOLACTONE’, ‘ALDACTONE’, ‘CAROSPIR’, ‘TRIAMTERENE’, ‘DYRENIUM’) or upcase(gnn) in: ('EPLERENONE', 'INSPRA', ‘SPIRONOLACTONE’, ‘ALDACTONE’, ‘CAROSPIR’, ‘TRIAMTERENE’, ‘DYRENIUM’);
+Run;
+data cms.all_diuretics_2015;
+    set partd15.pde_file_2015(keep=bene_id dob_dt gndr_cd srvc_dt qty_dspnsd_num days_suply_num bn gnn formulary_id frmlry_rx_id);
+    where upcase(bn) in: ('EPLERENONE', 'INSPRA', ‘SPIRONOLACTONE’, ‘ALDACTONE’, ‘CAROSPIR’, ‘TRIAMTERENE’, ‘DYRENIUM’) or upcase(gnn) in: ('EPLERENONE', 'INSPRA', ‘SPIRONOLACTONE’, ‘ALDACTONE’, ‘CAROSPIR’, ‘TRIAMTERENE’, ‘DYRENIUM’);
+Run;
+data cms.all_diuretics_2016;
+    set partd16.pde_file_2016(keep=bene_id dob_dt gndr_cd srvc_dt qty_dspnsd_num days_suply_num bn gnn formulary_id frmlry_rx_id);
+    where upcase(bn) in: ('EPLERENONE', 'INSPRA', ‘SPIRONOLACTONE’, ‘ALDACTONE’, ‘CAROSPIR’, ‘TRIAMTERENE’, ‘DYRENIUM’) or upcase(gnn) in: ('EPLERENONE', 'INSPRA', ‘SPIRONOLACTONE’, ‘ALDACTONE’, ‘CAROSPIR’, ‘TRIAMTERENE’, ‘DYRENIUM’);
+Run;
+data cms.all_diuretics_2017;
+    set partd17.pde_file_2017(keep=bene_id dob_dt gndr_cd srvc_dt qty_dspnsd_num days_suply_num bn gnn formulary_id frmlry_rx_id);
+    where upcase(bn) in: ('EPLERENONE', 'INSPRA', ‘SPIRONOLACTONE’, ‘ALDACTONE’, ‘CAROSPIR’, ‘TRIAMTERENE’, ‘DYRENIUM’) or upcase(gnn) in: ('EPLERENONE', 'INSPRA', ‘SPIRONOLACTONE’, ‘ALDACTONE’, ‘CAROSPIR’, ‘TRIAMTERENE’, ‘DYRENIUM’);
+Run;
+data cms.all_diuretics_2018;
+    set partd18.pde_file_2018(keep=bene_id dob_dt gndr_cd srvc_dt qty_dspnsd_num days_suply_num bn gnn formulary_id frmlry_rx_id);
+    where upcase(bn) in: ('EPLERENONE', 'INSPRA', ‘SPIRONOLACTONE’, ‘ALDACTONE’, ‘CAROSPIR’, ‘TRIAMTERENE’, ‘DYRENIUM’) or upcase(gnn) in: ('EPLERENONE', 'INSPRA', ‘SPIRONOLACTONE’, ‘ALDACTONE’, ‘CAROSPIR’, ‘TRIAMTERENE’, ‘DYRENIUM’);
+Run;
+data cms.all_diuretics_2019;
+    set partd19.pde_file_2019(keep=bene_id dob_dt gndr_cd srvc_dt qty_dspnsd_num days_suply_num bn gnn formulary_id frmlry_rx_id);
+    where upcase(bn) in: ('EPLERENONE', 'INSPRA', ‘SPIRONOLACTONE’, ‘ALDACTONE’, ‘CAROSPIR’, ‘TRIAMTERENE’, ‘DYRENIUM’) or upcase(gnn) in: ('EPLERENONE', 'INSPRA', ‘SPIRONOLACTONE’, ‘ALDACTONE’, ‘CAROSPIR’, ‘TRIAMTERENE’, ‘DYRENIUM’);
+Run;
+
+/*step 2: combine all amiloride claims and diuretics claims*/
+DATA cms.all_drug_claims;
+    SET cms.all_amiloride_2014 cms.all_amiloride_2015 cms.all_amiloride_2016 cms.all_amiloride_2017 cms.all_amiloride_2018 cms.all_amiloride_2019  cms.all_diuretics_2014 cms.all_diuretics_2015 cms.all_diuretics_2016 
+cms.all_diuretics_2017 
+cms.all_diuretics_2018 
+Cms.all_diuretics_2019;
+KEEP  bene_id gndr_cd srvc_dt qty_dspnsd_num days_suply_num bn gnn;
+RUN;
+
+
+
