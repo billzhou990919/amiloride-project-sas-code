@@ -24,7 +24,7 @@ data cms.all_drug_claims;
    retain prev_drug change_start change_flag;
 
    /* Initialize for the first row of each enrolid */
-   if first.enrolid then do;
+   if first.bene_id then do;
       prev_drug = amiloride;
       change_start = .; /* Reset change_start for each new enrolid */
       change_flag = 0; /* Reset change_flag for each new enrolid */
@@ -40,7 +40,7 @@ data cms.all_drug_claims;
    prev_drug = amiloride;
 
    /* Optional: Create a flag variable to indicate an enrolid with changes */
-   if last.enrolid and change_flag then change_detected = 1;
+   if last.bene_id and change_flag then change_detected = 1;
    else change_detected = 0;
 
    /* Keep only the necessary variables in the new dataset */
