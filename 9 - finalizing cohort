@@ -1,5 +1,11 @@
+proc sql;
+    create table cms.analytical_cohort as
+    select * from cms.all_drug_claims
+    where bene_id in (select bene_id from cms.study_cohort);
+quit;
+
 Data cms.analytical_cohort;
-Set cms.all_drug_claims;
+Set cms.analytical_cohort;
 Supp_end = srvc_dt + days_suply_num;
 run;
 
