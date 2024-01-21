@@ -33,7 +33,7 @@ Quit;
 
 
 proc sql;
-    create table cms.analytical_cohort as
+    create table cms.study_cohort as
     select distinct bene_id, 
            gndr_cd,
            amiloride, 
@@ -42,7 +42,7 @@ proc sql;
            earliest_pd, 
            discontinuation, 
            pd
-    from cms.study_cohort;
+    from cms.analytical_cohort;
 quit;
 
 
