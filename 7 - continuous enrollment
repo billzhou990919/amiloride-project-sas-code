@@ -1,0 +1,87 @@
+data cms.all_mbsf;
+    set cms.mbsf2014 cms.mbsf2015 cms.mbsf2016 cms.mbsf2017 cms.mbsf2018 cms.mbsf2019;
+    keep bene_id bene_enrollmt_ref_yr 
+         mdcr_entlmt_buyin_ind_01-mdcr_entlmt_buyin_ind_12 
+         hmo_ind_01-hmo_ind_12 
+         ptc_pbp_id_01-ptc_pbp_id_12 
+         ptd_cntrct_id_01-ptd_cntrct_id_12;
+run;
+
+
+
+proc sql;
+    create table cms.day0_month_year as
+    select distinct bene_id, month(index_date) as month_day0, year(index_date) as year_day0
+    from cms.nopriorpd;
+Quit;
+proc sort data=cms.all_mbsf;
+    by bene_id bene_enrollmt_ref_yr;
+run;
+
+proc sort data=cms.day0_month_year;
+    by bene_id;
+Run;
+data cms.merge_data;
+    merge cms.all_mbsf (in=a)
+          cms.day0_month_year (in=b);
+    by bene_id;
+    if b;
+Run;
+
+data cms.temp_continuous;
+    set cms.merge_data;
+    by bene_id;
+
+    array mdcr_entlmt[12] mdcr_entlmt_buyin_ind_01-mdcr_entlmt_buyin_ind_12;
+    array hmo[12] hmo_ind_01-hmo_ind_12;
+    array ptc_pbp[12] ptc_pbp_id_01-ptc_pbp_id_12;
+    array ptd_cntrct[12] ptd_cntrct_id_01-ptd_cntrct_id_12;
+    retain continuous 1;
+
+    if first.bene_id then do;
+        continuous = 1;
+        year_diff = year_day0 - bene_enrollmt_ref_yr;
+
+        if year_diff = 0 then do;
+            do i = 1 to month_day0;
+                if mdcr_entlmt[i] = 0 or put(hmo[i],1.) ^= "0" or missing(ptc_pbp[i]) 
+                   or not (substr(ptd_cntrct[i], 1, 1) in ('H', 'R', 'S', 'E')) then do;
+                    continuous = 0;
+                    leave;
+                end;
+            end;
+        end;
+
+        if year_diff = 1 then do;
+            do i = month_day0 + 1 to 12;
+                if mdcr_entlmt[i] = 0 or put(hmo[i],1.) ^= "0" or missing(ptc_pbp[i]) 
+                   or not (substr(ptd_cntrct[i], 1, 1) in ('H', 'R', 'S', 'E')) then do;
+                    continuous = 0;
+                    leave;
+                end;
+            end;
+        end;
+    end;
+
+    if last.bene_id and continuous;
+run;
+
+proc sql;
+    create table cms.final_continuous_enrollment as
+    select distinct bene_id
+    from cms.temp_continuous;
+Quit;
+
+proc datasets library=cms nolist;
+    delete day0_month_year merge_data temp_continuous;
+quit;
+
+
+
+proc sql;
+    create table cms.continuous_enrollment as
+    select a.*
+    from cms.nopriorpd as a
+    inner join cms.final_continuous_enrollment as b
+    on a.bene_id = b.bene_id;
+quit;
