@@ -110,3 +110,11 @@ data cms.study_cohort_v2;
     survival_time = censor_date - index_date;
 run;
 
+
+data cms.study_cohort_v2;
+set cms.study_cohort_v2;
+pd_perprotocol = 0;
+pd_itt = pd;
+if clm_from_dt < min (of discontinuation change_start) then pd_perprotocol = 1;
+run;
+
