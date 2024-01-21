@@ -11,3 +11,38 @@ If (upcase(bn) in: ('AMILORIDE', 'MIDAMOR') or upcase(gnn) in: ('AMILORIDE', 'MI
 If (upcase(bn) in: ('EPLERENONE', 'INSPRA', ‘SPIRONOLACTONE’, ‘ALDACTONE’, ‘CAROSPIR’, ‘TRIAMTERENE’, ‘DYRENIUM’) or upcase(gnn) in: ('EPLERENONE', 'INSPRA', ‘SPIRONOLACTONE’, ‘ALDACTONE’, ‘CAROSPIR’, ‘TRIAMTERENE’, ‘DYRENIUM’)) then amiloride = 0;
 Run;
 
+/*only keeping the first drug period of each user, adding switching indicator*/
+proc sort data=cms.all_drug_claims;
+   by bene_id srvc_dt;
+run;
+
+data cms.all_drug_claims;
+   cms.all_drug_claims;
+   by enrolid;
+
+   /* Retain the previous drug and change_start */
+   retain prev_drug change_start change_flag;
+
+   /* Initialize for the first row of each enrolid */
+   if first.enrolid then do;
+      prev_drug = amiloride;
+      change_start = .; /* Reset change_start for each new enrolid */
+      change_flag = 0; /* Reset change_flag for each new enrolid */
+   end;
+
+   /* Detect the first change in combination */
+   else if amiloride ne prev_drug and change_flag = 0 then do;
+      change_start = srvc_dt; /* Record the overlap_start at first change */
+      change_flag = 1; /* Set the flag so no further changes are recorded */
+   end;
+
+   /* Update the prev_comb for the next iteration */
+   prev_drug = amiloride;
+
+   /* Optional: Create a flag variable to indicate an enrolid with changes */
+   if last.enrolid and change_flag then change_detected = 1;
+   else change_detected = 0;
+
+   /* Keep only the necessary variables in the new dataset */
+   drop prev_drug change_flag;
+run;
