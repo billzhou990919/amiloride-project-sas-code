@@ -40,12 +40,13 @@ data cms.study_cohort;
 run;
 
 
-
 proc sql;
-    select count(distinct bene_id) as unique_bene_count
-    from cms.analytical_cohort;
-Quit;
-
+   create table cms.study_cohort as
+   select a.*, b.change_start, b.change_detected
+   from cms.study_cohort as a
+   left join cms.unique_drug_user_switching as b
+   on a.bene_id = b.bene_id;
+quit;
 
 
 data cms.analytical_cohort;
