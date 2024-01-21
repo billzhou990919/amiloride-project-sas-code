@@ -1,0 +1,170 @@
+/*exclude previous parkinson disease dx */
+Data cms.all_op_parkinson_2015;
+Set op15.outpatient_base_claims_k_2015;
+Where prncpal_dgns_cd in: (‘G20’, ‘3320’) or icd_dgns_cd1 in: (‘G20’, ‘3320’) or icd_dgns_cd1 in: (‘G20’, ‘3320’) or icd_dgns_cd3 in: (‘G20’, ‘3320’) or icd_dgns_cd4 in: (‘G20’, ‘3320’) or
+icd_dgns_cd5 in: (‘G20’, ‘3320’) or icd_dgns_cd6 in: (‘G20’, ‘3320’) or
+icd_dgns_cd7 in: (‘G20’, ‘3320’) or icd_dgns_cd8 in: (‘G20’, ‘3320’) or
+icd_dgns_cd9 in: (‘G20’, ‘3320’) or icd_dgns_cd10 in: (‘G20’, ‘3320’) or
+icd_dgns_cd11 in: (‘G20’, ‘3320’) or icd_dgns_cd12 in: (‘G20’, ‘3320’) or
+icd_dgns_cd13 in: (‘G20’, ‘3320’) or icd_dgns_cd14 in: (‘G20’, ‘3320’) or
+icd_dgns_cd15 in: (‘G20’, ‘3320’) or icd_dgns_cd16 in: (‘G20’, ‘3320’) or
+icd_dgns_cd17 in: (‘G20’, ‘3320’) or icd_dgns_cd18 in: (‘G20’, ‘3320’) or
+icd_dgns_cd19 in: (‘G20’, ‘3320’) or icd_dgns_cd20 in: (‘G20’, ‘3320’) or icd_dgns_cd21 in: (‘G20’, ‘3320’) or icd_dgns_cd22 in: (‘G20’, ‘3320’) or icd_dgns_cd23 in: (‘G20’, ‘3320’) or icd_dgns_cd24 in: (‘G20’, ‘3320’) or icd_dgns_cd25 in: (‘G20’, ‘3320’);
+Run;
+
+Data cms.all_op_parkinson_2016;
+Set op16.outpatient_base_claims_k_2016;
+Where prncpal_dgns_cd in: (‘G20’, ‘3320’) or icd_dgns_cd1 in: (‘G20’, ‘3320’) or icd_dgns_cd1 in: (‘G20’, ‘3320’) or icd_dgns_cd3 in: (‘G20’, ‘3320’) or icd_dgns_cd4 in: (‘G20’, ‘3320’) or
+icd_dgns_cd5 in: (‘G20’, ‘3320’) or icd_dgns_cd6 in: (‘G20’, ‘3320’) or
+icd_dgns_cd7 in: (‘G20’, ‘3320’) or icd_dgns_cd8 in: (‘G20’, ‘3320’) or
+icd_dgns_cd9 in: (‘G20’, ‘3320’) or icd_dgns_cd10 in: (‘G20’, ‘3320’) or
+icd_dgns_cd11 in: (‘G20’, ‘3320’) or icd_dgns_cd12 in: (‘G20’, ‘3320’) or
+icd_dgns_cd13 in: (‘G20’, ‘3320’) or icd_dgns_cd14 in: (‘G20’, ‘3320’) or
+icd_dgns_cd15 in: (‘G20’, ‘3320’) or icd_dgns_cd16 in: (‘G20’, ‘3320’) or
+icd_dgns_cd17 in: (‘G20’, ‘3320’) or icd_dgns_cd18 in: (‘G20’, ‘3320’) or
+icd_dgns_cd19 in: (‘G20’, ‘3320’) or icd_dgns_cd20 in: (‘G20’, ‘3320’) or icd_dgns_cd21 in: (‘G20’, ‘3320’) or icd_dgns_cd22 in: (‘G20’, ‘3320’) or icd_dgns_cd23 in: (‘G20’, ‘3320’) or icd_dgns_cd24 in: (‘G20’, ‘3320’) or icd_dgns_cd25 in: (‘G20’, ‘3320’);
+Run;
+
+Data cms.all_op_parkinson_2017;
+Set op17.outpatient_base_claims_k_2017;
+Where prncpal_dgns_cd in: (‘G20’, ‘3320’) or icd_dgns_cd1 in: (‘G20’, ‘3320’) or icd_dgns_cd1 in: (‘G20’, ‘3320’) or icd_dgns_cd3 in: (‘G20’, ‘3320’) or icd_dgns_cd4 in: (‘G20’, ‘3320’) or
+icd_dgns_cd5 in: (‘G20’, ‘3320’) or icd_dgns_cd6 in: (‘G20’, ‘3320’) or
+icd_dgns_cd7 in: (‘G20’, ‘3320’) or icd_dgns_cd8 in: (‘G20’, ‘3320’) or
+icd_dgns_cd9 in: (‘G20’, ‘3320’) or icd_dgns_cd10 in: (‘G20’, ‘3320’) or
+icd_dgns_cd11 in: (‘G20’, ‘3320’) or icd_dgns_cd12 in: (‘G20’, ‘3320’) or
+icd_dgns_cd13 in: (‘G20’, ‘3320’) or icd_dgns_cd14 in: (‘G20’, ‘3320’) or
+icd_dgns_cd15 in: (‘G20’, ‘3320’) or icd_dgns_cd16 in: (‘G20’, ‘3320’) or
+icd_dgns_cd17 in: (‘G20’, ‘3320’) or icd_dgns_cd18 in: (‘G20’, ‘3320’) or
+icd_dgns_cd19 in: (‘G20’, ‘3320’) or icd_dgns_cd20 in: (‘G20’, ‘3320’) or icd_dgns_cd21 in: (‘G20’, ‘3320’) or icd_dgns_cd22 in: (‘G20’, ‘3320’) or icd_dgns_cd23 in: (‘G20’, ‘3320’) or icd_dgns_cd24 in: (‘G20’, ‘3320’) or icd_dgns_cd25 in: (‘G20’, ‘3320’);
+Run;
+
+Data cms.all_op_parkinson_2018;
+Set op18.outpatient_base_claims_k_2018;
+Where prncpal_dgns_cd in: (‘G20’, ‘3320’) or icd_dgns_cd1 in: (‘G20’, ‘3320’) or icd_dgns_cd1 in: (‘G20’, ‘3320’) or icd_dgns_cd3 in: (‘G20’, ‘3320’) or icd_dgns_cd4 in: (‘G20’, ‘3320’) or
+icd_dgns_cd5 in: (‘G20’, ‘3320’) or icd_dgns_cd6 in: (‘G20’, ‘3320’) or
+icd_dgns_cd7 in: (‘G20’, ‘3320’) or icd_dgns_cd8 in: (‘G20’, ‘3320’) or
+icd_dgns_cd9 in: (‘G20’, ‘3320’) or icd_dgns_cd10 in: (‘G20’, ‘3320’) or
+icd_dgns_cd11 in: (‘G20’, ‘3320’) or icd_dgns_cd12 in: (‘G20’, ‘3320’) or
+icd_dgns_cd13 in: (‘G20’, ‘3320’) or icd_dgns_cd14 in: (‘G20’, ‘3320’) or
+icd_dgns_cd15 in: (‘G20’, ‘3320’) or icd_dgns_cd16 in: (‘G20’, ‘3320’) or
+icd_dgns_cd17 in: (‘G20’, ‘3320’) or icd_dgns_cd18 in: (‘G20’, ‘3320’) or
+icd_dgns_cd19 in: (‘G20’, ‘3320’) or icd_dgns_cd20 in: (‘G20’, ‘3320’) or icd_dgns_cd21 in: (‘G20’, ‘3320’) or icd_dgns_cd22 in: (‘G20’, ‘3320’) or icd_dgns_cd23 in: (‘G20’, ‘3320’) or icd_dgns_cd24 in: (‘G20’, ‘3320’) or icd_dgns_cd25 in: (‘G20’, ‘3320’);
+Run;
+
+Data cms.all_op_parkinson_2019;
+Set op19.outpatient_base_claims_2019;
+Where prncpal_dgns_cd in: (‘G20’, ‘3320’) or icd_dgns_cd1 in: (‘G20’, ‘3320’) or icd_dgns_cd1 in: (‘G20’, ‘3320’) or icd_dgns_cd3 in: (‘G20’, ‘3320’) or icd_dgns_cd4 in: (‘G20’, ‘3320’) or
+icd_dgns_cd5 in: (‘G20’, ‘3320’) or icd_dgns_cd6 in: (‘G20’, ‘3320’) or
+icd_dgns_cd7 in: (‘G20’, ‘3320’) or icd_dgns_cd8 in: (‘G20’, ‘3320’) or
+icd_dgns_cd9 in: (‘G20’, ‘3320’) or icd_dgns_cd10 in: (‘G20’, ‘3320’) or
+icd_dgns_cd11 in: (‘G20’, ‘3320’) or icd_dgns_cd12 in: (‘G20’, ‘3320’) or
+icd_dgns_cd13 in: (‘G20’, ‘3320’) or icd_dgns_cd14 in: (‘G20’, ‘3320’) or
+icd_dgns_cd15 in: (‘G20’, ‘3320’) or icd_dgns_cd16 in: (‘G20’, ‘3320’) or
+icd_dgns_cd17 in: (‘G20’, ‘3320’) or icd_dgns_cd18 in: (‘G20’, ‘3320’) or
+icd_dgns_cd19 in: (‘G20’, ‘3320’) or icd_dgns_cd20 in: (‘G20’, ‘3320’) or icd_dgns_cd21 in: (‘G20’, ‘3320’) or icd_dgns_cd22 in: (‘G20’, ‘3320’) or icd_dgns_cd23 in: (‘G20’, ‘3320’) or icd_dgns_cd24 in: (‘G20’, ‘3320’) or icd_dgns_cd25 in: (‘G20’, ‘3320’);
+Run;
+
+Data cms.all_ip_parkinson_2015;
+Set ip15.inpatient_base_claims_k_2015;
+Where admtg_dgns_cd in: (‘G20’, ‘3320’) or prncpal_dgns_cd in: (‘G20’, ‘3320’) or icd_dgns_cd1 in: (‘G20’, ‘3320’) or icd_dgns_cd1 in: (‘G20’, ‘3320’) or icd_dgns_cd3 in: (‘G20’, ‘3320’) or icd_dgns_cd4 in: (‘G20’, ‘3320’) or
+icd_dgns_cd5 in: (‘G20’, ‘3320’) or icd_dgns_cd6 in: (‘G20’, ‘3320’) or
+icd_dgns_cd7 in: (‘G20’, ‘3320’) or icd_dgns_cd8 in: (‘G20’, ‘3320’) or
+icd_dgns_cd9 in: (‘G20’, ‘3320’) or icd_dgns_cd10 in: (‘G20’, ‘3320’) or
+icd_dgns_cd11 in: (‘G20’, ‘3320’) or icd_dgns_cd12 in: (‘G20’, ‘3320’) or
+icd_dgns_cd13 in: (‘G20’, ‘3320’) or icd_dgns_cd14 in: (‘G20’, ‘3320’) or
+icd_dgns_cd15 in: (‘G20’, ‘3320’) or icd_dgns_cd16 in: (‘G20’, ‘3320’) or
+icd_dgns_cd17 in: (‘G20’, ‘3320’) or icd_dgns_cd18 in: (‘G20’, ‘3320’) or
+icd_dgns_cd19 in: (‘G20’, ‘3320’) or icd_dgns_cd20 in: (‘G20’, ‘3320’) or icd_dgns_cd21 in: (‘G20’, ‘3320’) or icd_dgns_cd22 in: (‘G20’, ‘3320’) or icd_dgns_cd23 in: (‘G20’, ‘3320’) or icd_dgns_cd24 in: (‘G20’, ‘3320’) or icd_dgns_cd25 in: (‘G20’, ‘3320’);
+Run;
+
+Data cms.all_ip_parkinson_2016;
+Set ip16.inpatient_base_claims_k_2016;
+Where admtg_dgns_cd in: (‘G20’, ‘3320’) or prncpal_dgns_cd in: (‘G20’, ‘3320’) or icd_dgns_cd1 in: (‘G20’, ‘3320’) or icd_dgns_cd1 in: (‘G20’, ‘3320’) or icd_dgns_cd3 in: (‘G20’, ‘3320’) or icd_dgns_cd4 in: (‘G20’, ‘3320’) or
+icd_dgns_cd5 in: (‘G20’, ‘3320’) or icd_dgns_cd6 in: (‘G20’, ‘3320’) or
+icd_dgns_cd7 in: (‘G20’, ‘3320’) or icd_dgns_cd8 in: (‘G20’, ‘3320’) or
+icd_dgns_cd9 in: (‘G20’, ‘3320’) or icd_dgns_cd10 in: (‘G20’, ‘3320’) or
+icd_dgns_cd11 in: (‘G20’, ‘3320’) or icd_dgns_cd12 in: (‘G20’, ‘3320’) or
+icd_dgns_cd13 in: (‘G20’, ‘3320’) or icd_dgns_cd14 in: (‘G20’, ‘3320’) or
+icd_dgns_cd15 in: (‘G20’, ‘3320’) or icd_dgns_cd16 in: (‘G20’, ‘3320’) or
+icd_dgns_cd17 in: (‘G20’, ‘3320’) or icd_dgns_cd18 in: (‘G20’, ‘3320’) or
+icd_dgns_cd19 in: (‘G20’, ‘3320’) or icd_dgns_cd20 in: (‘G20’, ‘3320’) or icd_dgns_cd21 in: (‘G20’, ‘3320’) or icd_dgns_cd22 in: (‘G20’, ‘3320’) or icd_dgns_cd23 in: (‘G20’, ‘3320’) or icd_dgns_cd24 in: (‘G20’, ‘3320’) or icd_dgns_cd25 in: (‘G20’, ‘3320’);
+Run;
+
+Data cms.all_ip_parkinson_2017;
+Set ip17.inpatient_base_claims_k_2017;
+Where admtg_dgns_cd in: (‘G20’, ‘3320’) or prncpal_dgns_cd in: (‘G20’, ‘3320’) or icd_dgns_cd1 in: (‘G20’, ‘3320’) or icd_dgns_cd1 in: (‘G20’, ‘3320’) or icd_dgns_cd3 in: (‘G20’, ‘3320’) or icd_dgns_cd4 in: (‘G20’, ‘3320’) or
+icd_dgns_cd5 in: (‘G20’, ‘3320’) or icd_dgns_cd6 in: (‘G20’, ‘3320’) or
+icd_dgns_cd7 in: (‘G20’, ‘3320’) or icd_dgns_cd8 in: (‘G20’, ‘3320’) or
+icd_dgns_cd9 in: (‘G20’, ‘3320’) or icd_dgns_cd10 in: (‘G20’, ‘3320’) or
+icd_dgns_cd11 in: (‘G20’, ‘3320’) or icd_dgns_cd12 in: (‘G20’, ‘3320’) or
+icd_dgns_cd13 in: (‘G20’, ‘3320’) or icd_dgns_cd14 in: (‘G20’, ‘3320’) or
+icd_dgns_cd15 in: (‘G20’, ‘3320’) or icd_dgns_cd16 in: (‘G20’, ‘3320’) or
+icd_dgns_cd17 in: (‘G20’, ‘3320’) or icd_dgns_cd18 in: (‘G20’, ‘3320’) or
+icd_dgns_cd19 in: (‘G20’, ‘3320’) or icd_dgns_cd20 in: (‘G20’, ‘3320’) or icd_dgns_cd21 in: (‘G20’, ‘3320’) or icd_dgns_cd22 in: (‘G20’, ‘3320’) or icd_dgns_cd23 in: (‘G20’, ‘3320’) or icd_dgns_cd24 in: (‘G20’, ‘3320’) or icd_dgns_cd25 in: (‘G20’, ‘3320’);
+Run;
+
+Data cms.all_ip_parkinson_2018;
+Set ip18.inpatient_base_claims_k_2018;
+Where admtg_dgns_cd in: (‘G20’, ‘3320’) or prncpal_dgns_cd in: (‘G20’, ‘3320’) or icd_dgns_cd1 in: (‘G20’, ‘3320’) or icd_dgns_cd1 in: (‘G20’, ‘3320’) or icd_dgns_cd3 in: (‘G20’, ‘3320’) or icd_dgns_cd4 in: (‘G20’, ‘3320’) or
+icd_dgns_cd5 in: (‘G20’, ‘3320’) or icd_dgns_cd6 in: (‘G20’, ‘3320’) or
+icd_dgns_cd7 in: (‘G20’, ‘3320’) or icd_dgns_cd8 in: (‘G20’, ‘3320’) or
+icd_dgns_cd9 in: (‘G20’, ‘3320’) or icd_dgns_cd10 in: (‘G20’, ‘3320’) or
+icd_dgns_cd11 in: (‘G20’, ‘3320’) or icd_dgns_cd12 in: (‘G20’, ‘3320’) or
+icd_dgns_cd13 in: (‘G20’, ‘3320’) or icd_dgns_cd14 in: (‘G20’, ‘3320’) or
+icd_dgns_cd15 in: (‘G20’, ‘3320’) or icd_dgns_cd16 in: (‘G20’, ‘3320’) or
+icd_dgns_cd17 in: (‘G20’, ‘3320’) or icd_dgns_cd18 in: (‘G20’, ‘3320’) or
+icd_dgns_cd19 in: (‘G20’, ‘3320’) or icd_dgns_cd20 in: (‘G20’, ‘3320’) or icd_dgns_cd21 in: (‘G20’, ‘3320’) or icd_dgns_cd22 in: (‘G20’, ‘3320’) or icd_dgns_cd23 in: (‘G20’, ‘3320’) or icd_dgns_cd24 in: (‘G20’, ‘3320’) or icd_dgns_cd25 in: (‘G20’, ‘3320’);
+Run;
+
+Data cms.all_ip_parkinson_2019;
+Set ip19.inpatient_base_claims_2019;
+Where admtg_dgns_cd in: (‘G20’, ‘3320’) or prncpal_dgns_cd in: (‘G20’, ‘3320’) or icd_dgns_cd1 in: (‘G20’, ‘3320’) or icd_dgns_cd1 in: (‘G20’, ‘3320’) or icd_dgns_cd3 in: (‘G20’, ‘3320’) or icd_dgns_cd4 in: (‘G20’, ‘3320’) or
+icd_dgns_cd5 in: (‘G20’, ‘3320’) or icd_dgns_cd6 in: (‘G20’, ‘3320’) or
+icd_dgns_cd7 in: (‘G20’, ‘3320’) or icd_dgns_cd8 in: (‘G20’, ‘3320’) or
+icd_dgns_cd9 in: (‘G20’, ‘3320’) or icd_dgns_cd10 in: (‘G20’, ‘3320’) or
+icd_dgns_cd11 in: (‘G20’, ‘3320’) or icd_dgns_cd12 in: (‘G20’, ‘3320’) or
+icd_dgns_cd13 in: (‘G20’, ‘3320’) or icd_dgns_cd14 in: (‘G20’, ‘3320’) or
+icd_dgns_cd15 in: (‘G20’, ‘3320’) or icd_dgns_cd16 in: (‘G20’, ‘3320’) or
+icd_dgns_cd17 in: (‘G20’, ‘3320’) or icd_dgns_cd18 in: (‘G20’, ‘3320’) or
+icd_dgns_cd19 in: (‘G20’, ‘3320’) or icd_dgns_cd20 in: (‘G20’, ‘3320’) or icd_dgns_cd21 in: (‘G20’, ‘3320’) or icd_dgns_cd22 in: (‘G20’, ‘3320’) or icd_dgns_cd23 in: (‘G20’, ‘3320’) or icd_dgns_cd24 in: (‘G20’, ‘3320’) or icd_dgns_cd25 in: (‘G20’, ‘3320’);
+Run;
+
+/*combining all parkinson claims */
+Data cms.all_parkinson;
+Set cms.all_ip_parkinson_2015 cms.all_ip_parkinson_2016 cms.all_ip_parkinson_2017 cms.all_ip_parkinson_2018 cms.all_ip_parkinson_2019 cms.all_op_parkinson_2015 cms.all_op_parkinson_2016 cms.all_op_parkinson_2017 cms.all_op_parkinson_2018 cms.all_op_parkinson_2019;
+KEEP bene_id clm_from_dt;
+Run;
+
+
+/*delete all rows with pd dx 12 months prior to index_date */
+proc sql;
+   create table cms.merged as
+   select a.*, b.clm_from_dt
+   from cms.exclude65 a
+   left join cms.all_parkinson b
+   on a.bene_id = b.bene_id;
+quit;
+
+/* Identify individuals to exclude */
+proc sql;
+   create table cms.to_exclude as
+   select distinct bene_id
+   from cms.merged
+   where intck('month', clm_from_dt, index_date) between -12 and 0;
+quit;
+
+/* Exclude the identified individuals from exclude65 */
+proc sql;
+   create table cms.nopriorpd as
+   select *
+   from cms.exclude65
+   where bene_id not in (select bene_id from cms.to_exclude);
+quit;
+
+/* Delete intermediate datasets */
+proc datasets lib=cms nolist noprint;
+   delete merged;
+   delete to_exclude;
+Quit;
+
+
