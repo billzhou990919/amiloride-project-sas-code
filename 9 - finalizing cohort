@@ -39,7 +39,7 @@ proc sql;
            amiloride, 
            index_date, 
            birth_date, 
-           discontinuation, 
+           discontinuation
     from cms.analytical_cohort;
 quit;
 
