@@ -32,16 +32,13 @@ run;
 Quit;
 
 
-proc sql;
-    create table cms.study_cohort as
-    select distinct bene_id, 
-           gndr_cd,
-           amiloride, 
-           index_date, 
-           birth_date, 
-           discontinuation
-    from cms.analytical_cohort;
-quit;
+data cms.study_cohort;
+   set cms.analytical_cohort;
+   by bene_id;
+   if first.bene_id;
+   keep bene_id gndr_cd amiloride index_date birth_date discontinuation bn gnn;
+run;
+
 
 
 proc sql;
