@@ -17,7 +17,7 @@ proc sort data=cms.all_drug_claims;
 run;
 
 data cms.all_drug_claims;
-   cms.all_drug_claims;
+   set cms.all_drug_claims;
    by enrolid;
 
    /* Retain the previous drug and change_start */
