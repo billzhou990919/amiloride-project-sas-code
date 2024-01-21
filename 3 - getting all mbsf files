@@ -1,0 +1,40 @@
+/*getting all mbsf */
+proc sql;
+    create table cms.mbsf2014 as
+    select * from mbsf14.mbsf_abcd_summary_2014
+    where bene_id in (select bene_id from cms.unique_bene_ids);
+Quit;
+proc sql;
+    create table cms.mbsf2015 as
+    select * from mbsf15.mbsf_abcd_summary_2015
+    where bene_id in (select bene_id from cms.unique_bene_ids);
+Quit;
+proc sql;
+    create table cms.mbsf2016 as
+    select * from mbsf16.mbsf_abcd_summary_2016
+    where bene_id in (select bene_id from cms.unique_bene_ids);
+Quit;
+proc sql;
+    create table cms.mbsf2017 as
+    select * from mbsf17.mbsf_abcd_summary_2017
+    where bene_id in (select bene_id from cms.unique_bene_ids);
+Quit;
+proc sql;
+    create table cms.mbsf2018 as
+    select * from mbsf18.mbsf_abcd_summary_2018
+    where bene_id in (select bene_id from cms.unique_bene_ids);
+Quit;
+proc sql;
+    create table cms.mbsf2019 as
+    select * from mbsf19.mbsf_abcd_summary_2019
+    where bene_id in (select bene_id from cms.unique_bene_ids);
+Quit;
+
+Data cms.mbsf;
+Set cms.mbsf2014 cms.mbsf2015 cms.mbsf2016 cms.mbsf2017 cms.mbsf2018 cms.mbsf2019;
+run;
+
+Data cms.mbsf;
+Set cms.mbsf;
+Where sample_group ne ‘ ‘;
+Run;
