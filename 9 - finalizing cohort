@@ -48,6 +48,23 @@ proc sql;
    on a.bene_id = b.bene_id;
 quit;
 
+/*getting pd indicator and dx time*/
+data cms.study_cohort;
+    set cms.study_cohort;
+    pd = .;  /* Initialize pd to missing */
+    pd_time = .;  /* Initialize pd_time to missing */
+run;
+proc sql;
+    create table cms.study_cohort_v2 as
+    select a.bene_id, 
+           case when b.clm_from_dt > a.index_date then 1 else a.pd end as pd,
+           case when b.clm_from_dt > a.index_date then b.clm_from_dt else a.pd_time end as pd_time
+    from cms.study_cohort as a
+    left join cms.all_parkinson as b
+    on a.bene_id = b.bene_id;
+quit;
+
+
 
 data cms.analytical_cohort;
     set cms.analytical_cohort_nodup;
