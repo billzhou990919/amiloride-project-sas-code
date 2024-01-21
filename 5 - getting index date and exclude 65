@@ -1,0 +1,54 @@
+/*getting index date for each individual */
+proc sql;
+    create table cms.min_dates as
+    select bene_id, min(srvc_dt) as index_date
+    from cms.more_than_one_claims
+    group by bene_id;
+quit;
+
+/* Step 2: Merge the earliest srvc_dt with the original dataset */
+data cms.all_drug_claims_index;
+    merge cms.more_than_one_claims(in=a) cms.min_dates(in=b);
+    by bene_id;
+    if a;
+run;
+
+/* Cleanup: Delete the temporary min_dates dataset */
+proc datasets library=cms nolist;
+    delete min_dates;
+run;
+quit;
+
+/*exclude those younger than 65 on index date*/
+proc sort data=cms.mbsf(keep=bene_id bene_birth_dt) out=cms.bene_births_dedup nodupkey;
+    by bene_id;
+run;
+
+/* Step 2: Merge the deduplicated birth dates with cms.all_drug_claims_index */
+data cms.all_drug_claims_index_birth;
+    merge cms.all_drug_claims_index(in=a) cms.bene_births_dedup(in=b);
+    by bene_id;
+    birth_date = bene_birth_dt;
+    if a;  /* Keep all records from cms.all_drug_claims_index */
+Run;
+
+data cms.all_drug_claims_index_birth;
+    set cms.all_drug_claims_index_birth(drop=bene_birth_dt);
+run;
+
+Data cms.all_drug_claims_index_birth;
+Set cms.all_drug_claims_index_birth;
+Where index_date ne .;
+run;
+
+data cms.exclude65;
+    set cms.all_drug_claims_index_birth;
+
+    /* Calculate age at index_date */
+    age = int((index_date - birth_date) / 365.25);
+
+    /* Keep only records where age is 65 or older */
+    if age >= 65;
+    
+     /* Remove the temporary age variable */
+run;
