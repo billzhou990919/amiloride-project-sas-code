@@ -15,6 +15,6 @@ proc freq data=cms.study_cohort_v2;
 run;
 
 proc freq data=cms.study_cohort_v2;
-    tables gnn;
+    var gnn;
 run;
 
