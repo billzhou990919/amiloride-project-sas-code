@@ -1,1 +1,11 @@
+proc lifetest data=cms.study_cohort_v2 plots=survival(overlay);
+    time survival_time*pd(0); 
+    strata amiloride;              
+run;
+
+proc phreg data=cms.study_cohort_v2 ;
+    class amiloride;
+    model survival_time*pd(0) = amiloride / ties=breslow;
+    hazardratio 'amiloride' amiloride;
+run;
 
