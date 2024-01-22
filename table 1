@@ -6,9 +6,10 @@ proc freq data=cms.study_cohort_v2;
     tables gndr_cd * amiloride;
 run;
 
-proc means data =cms.study_cohort_v2;
-var age * amiloride;
-run;
+PROC MEANS DATA=cms.study_cohort_v2 MIN MAX MEAN MEDIAN STD Q1 Q3;
+Class amiloride;
+    VAR age;
+RUN;
 
 proc freq data=cms.study_cohort_v2;
     tables change_detected * amiloride;
