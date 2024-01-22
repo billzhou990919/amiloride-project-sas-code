@@ -6,8 +6,8 @@ proc freq data=cms.study_cohort_v2;
     tables gndr_cd * amiloride;
 run;
 
-proc freq data=cms.study_cohort_v2;
-    tables age * amiloride;
+proc means data =cms.study_cohort_v2;
+var age * amiloride;
 run;
 
 proc freq data=cms.study_cohort_v2;
