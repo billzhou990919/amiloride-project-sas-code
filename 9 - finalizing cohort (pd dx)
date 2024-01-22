@@ -115,6 +115,6 @@ data cms.study_cohort_v2;
 set cms.study_cohort_v2;
 pd_perprotocol = 0;
 pd_itt = pd;
-if clm_from_dt < min (of discontinuation change_start) then pd_perprotocol = 1;
+if index_date < clm_from_dt < min (of discontinuation change_start) then pd_perprotocol = 1;
 run;
 
