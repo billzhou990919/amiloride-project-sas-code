@@ -1,1 +1,5 @@
+proc freq data=cms.study_cohort_v2;
+    tables pd / list missing;
+    by amiloride;
+run;
 
