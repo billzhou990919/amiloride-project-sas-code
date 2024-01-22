@@ -94,6 +94,7 @@ quit;
 
 data cms.study_cohort_v2;
 set cms.study_cohort_v2;
+pd = 0;
 if clm_from_dt ne . then pd = 1;
 run;
 
