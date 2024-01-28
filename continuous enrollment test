@@ -1,16 +1,19 @@
+data cms.all_mbsf;
+    set cms.mbsf2014 cms.mbsf2015 cms.mbsf2016 cms.mbsf2017 cms.mbsf2018 cms.mbsf2019;
+    keep bene_id bene_enrollmt_ref_yr 
+         mdcr_entlmt_buyin_ind_01-mdcr_entlmt_buyin_ind_12 
+         hmo_ind_01-hmo_ind_12 
+         ptc_pbp_id_01-ptc_pbp_id_12 
+         ptd_cntrct_id_01-ptd_cntrct_id_12;
+run;
+
+
 **CONTINUOUS ENROLLMENT;
 %macro _5pbenesum( yr, indata);
-data benesum&yr (keep = bene_id buyin01-buyin12 hmoind01-hmoind12  HMOIND_&yr BUYIN_&yr BUYIN_MO_&yr orec_&yr crec_&yr MS_CD_&yr age_&yr);
+data benesum&yr (keep = bene_id mdcr_entlmt_buyin_ind_01-mdcr_entlmt_buyin_ind_12 hmo_ind_01-hmo_ind_12  HMOIND_&yr BUYIN_&yr);
   set _5P20&yr..&indata;
   HMOIND_&yr = compress(HMOIND01||HMOIND02||HMOIND03||HMOIND04||HMOIND05||HMOIND06||HMOIND07||HMOIND08||HMOIND09||HMOIND10||HMOIND11||HMOIND12, " ");
-  BUYIN_&yr = compress(BUYIN01||BUYIN02||BUYIN03||BUYIN04||BUYIN05||BUYIN06||BUYIN07||BUYIN08||BUYIN09||BUYIN10||BUYIN11||BUYIN12, " ");
-BUYIN_MO_&yr=BUYIN_MO;
-  orec_&yr=orec;
-  crec_&yr=crec;
-  MS_CD_&yr=MS_CD;
-  age_&yr=age;
-death_dt_&yr=death_dt;
-drop BUYIN_MO orec crec MS_CD age death_dt;
+  BUYIN__&yr = compress(mdcr_entlmt_buyin_ind_01||mdcr_entlmt_buyin_ind_02||mdcr_entlmt_buyin_ind_03||mdcr_entlmt_buyin_ind_04||mdcr_entlmt_buyin_ind_05||mdcr_entlmt_buyin_ind_06||mdcr_entlmt_buyin_ind_07||mdcr_entlmt_buyin_ind_08||mdcr_entlmt_buyin_ind_09||mdcr_entlmt_buyin_ind_10||mdcr_entlmt_buyin_ind_11||mdcr_entlmt_buyin_ind_12, " ");
 run;
 
 proc sort data=benesum&yr; by bene_id; run;
