@@ -1,0 +1,71 @@
+**CONTINUOUS ENROLLMENT;
+%macro _5pbenesum( yr, indata);
+data benesum&yr (keep = bene_id buyin01-buyin12 hmoind01-hmoind12  HMOIND_&yr BUYIN_&yr BUYIN_MO_&yr orec_&yr crec_&yr MS_CD_&yr age_&yr);
+  set _5P20&yr..&indata;
+  HMOIND_&yr = compress(HMOIND01||HMOIND02||HMOIND03||HMOIND04||HMOIND05||HMOIND06||HMOIND07||HMOIND08||HMOIND09||HMOIND10||HMOIND11||HMOIND12, " ");
+  BUYIN_&yr = compress(BUYIN01||BUYIN02||BUYIN03||BUYIN04||BUYIN05||BUYIN06||BUYIN07||BUYIN08||BUYIN09||BUYIN10||BUYIN11||BUYIN12, " ");
+BUYIN_MO_&yr=BUYIN_MO;
+  orec_&yr=orec;
+  crec_&yr=crec;
+  MS_CD_&yr=MS_CD;
+  age_&yr=age;
+death_dt_&yr=death_dt;
+drop BUYIN_MO orec crec MS_CD age death_dt;
+run;
+
+proc sort data=benesum&yr; by bene_id; run;
+
+Proc sql;
+create table  benesum&yr._1 as
+select a.bene_id, a.bene_dob, a.sex, a.race, a.death_dt_&yr, a.state_cd, a.HMOIND_&yr, a.BUYIN_&yr, a.BUYIN_MO_&yr, a.orec_&yr, a.crec_&yr, a.MS_CD_&yr, a.age_&yr
+from benesum&yr as a, SURG.medpar08_14_1 as b
+where a.bene_id = b.bene_id;
+quit;
+
+Proc sort data = benesum&yr._1 nodupkey; by bene_id; run;
+
+%mend _5pbenesum;
+
+%_5pbenesum (07, dnmntrff07_5p);	
+%_5pbenesum (08, dnmntrff08_5p);	
+%_5pbenesum (09, Bene_sum09_5p);	
+%_5pbenesum (10, Mbsf_ab10_5p);		
+%_5pbenesum (11, Mbsf_ab11_5p);		
+%_5pbenesum (12, Mbsf_ab12_5p);		
+%_5pbenesum (13, Mbsf_ab13_5p);		
+%_5pbenesum (14, Mbsf_ab14_5p);		
+
+data benesum_2007_2014 ;					*939116 unique patients;
+  merge Benesum07_1 Benesum08_1 Benesum09_1 Benesum10_1 Benesum11_1 Benesum12_1 Benesum13_1 Benesum14_1;
+  by bene_id;
+run;
+
+Proc sql;							
+create table raw_cohort1 as
+select * 
+from  Benesum_2007_2014 as a,  SURG.medpar08_14_1 as b
+where a.bene_id = b.bene_id;
+quit;
+
+data  raw_cohort4; 
+  set raw_cohort3;
+
+   HMOIND = HMOIND_07||HMOIND_08||HMOIND_09||HMOIND_10||HMOIND_11||HMOIND_12||HMOIND_13||HMOIND_14;
+   BUYIN = BUYIN_07||BUYIN_08||BUYIN_09||BUYIN_10||BUYIN_11||BUYIN_12||BUYIN_13||BUYIN_14;
+
+	PartAB365 = 0;						
+	HMO365=0;				
+
+    Start  = (year(ADMSNDT)-2007)*12 + month(ADMSNDT) -12;
+	end  = (year(ADMSNDT)-2007)*12 + month(ADMSNDT) - 1;
+
+	**365 days prior to index date;
+	do i = start to end until (substr (BUYIN,i,1) not in ("3","C"));
+			if substr(BUYIN,i,1)in ("3","C")then PartAB365 + 1; end;
+
+	do j=start to end until (substr(HMOIND,j,1)not in ("0"));
+		if substr(HMOIND,j,1) in ("0")then HMO365+1; end;	
+
+	if partAB365 = (end-start)+1 and hmo365 = (end-start) + 1 then cont_12mon = 1; else cont_12mon = 0;
+
+run;
