@@ -9,3 +9,14 @@ proc phreg data=cms.study_cohort_v2 ;
     hazardratio 'amiloride' amiloride;
 run;
 
+/* 2 by 2 table of pd * amiloride */
+proc freq data=cms.study_cohort_v2;
+    table pd_itt * amiloride;
+run;
+
+proc freq data=cms.study_cohort_v2;
+    table pd_perprotocol* amiloride;
+run;
+
+/*calculate incidence rate*/
+proc 
