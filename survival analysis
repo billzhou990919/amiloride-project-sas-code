@@ -19,4 +19,7 @@ proc freq data=cms.study_cohort_v2;
 run;
 
 /*calculate incidence rate*/
-proc 
+proc means data = cms.study_cohort_v2 sum;
+    class amiloride;
+    var survival_time;
+run;
