@@ -539,3 +539,72 @@ proc sql;
 quit;
 
 
+/*getting pd indicator and dx time*/
+proc sort data=cms.nopriorpd2017; by bene_id; run;
+
+/* Merge the summary dataset with all_bleeding based on enrolid */
+data cms.merged_dataset;
+    merge cms.nopriorpd2017(in=a) cms.all_parkinson(in=b);
+    by bene_id;
+    if a and b; /* This keeps only the matched records */
+run;
+
+/* Filter the rows based on the date conditions and create a new dataset */
+data cms.adverse_event;
+    set cms.merged_dataset;
+    if clm_from_dt >= new_index_date;
+Run;
+
+Proc datasets library=cms nolist;
+Delete merged_dataset;
+Run;
+
+/*only keeping the first bleeding event*/
+/* Sort the dataset by enrolid and admdate */
+proc sort data=cms.adverse_event;
+    by bene_id clm_from_dt;
+run;
+
+/* Keep only the first occurrence of each enrolid (i.e., the row with the earliest admdate) */
+data cms.adverse_event; 
+    set cms.adverse_event;
+    by bene_id;
+    if first.bene_id;
+run;
+
+
+
+proc sql;
+    create table cms.study_cohort_2017 as
+    select a.*, b.clm_from_dt
+    from cms.nopriorpd2017 as a
+    left join cms.adverse_event as b
+    on a.bene_id = b.bene_id;
+quit;
+
+data cms.study_cohort_2017;
+set cms.study_cohort_2017;
+pd = 0;
+if clm_from_dt ne . then pd = 1;
+run;
+
+data cms.study_cohort_2017; 
+    set cms.study_cohort_2017;
+    study_end = 21914;
+    censor_date = min(of clm_from_dt study_end);
+    format censor_date new_index_date clm_from_dt MMDDYY10.; 
+run;
+
+/*calculate survival time*/
+data cms.study_cohort_2017; 
+    set cms.study_cohort_2017;
+    survival_time = censor_date - new_index_date;
+run;
+
+
+proc freq data=cms.study_cohort_2017;
+    table diuretics * pd;
+run;
+
+
+
