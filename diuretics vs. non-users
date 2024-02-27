@@ -486,3 +486,35 @@ data cms.nonusersdec2017v2;
     set dec_mindates_repeated(keep=index_date rename=(index_date=new_index_date)) point=_N_;
     if _N_ > numObs then stop;
 run;
+
+
+/*delete all rows with pd dx 12 months prior to index_date */
+proc sql;
+   create table cms.nopriorpd2017 as
+   select a.*, b.clm_from_dt
+   from cms.exclude65 a
+   left join cms.all_parkinson b
+   on a.bene_id = b.bene_id;
+quit;
+
+/* Identify individuals to exclude */
+proc sql;
+   create table cms.to_exclude as
+   select distinct bene_id
+   from cms.merged
+   where intck('month', clm_from_dt, index_date) between -12 and 0;
+quit;
+
+/* Exclude the identified individuals from exclude65 */
+proc sql;
+   create table cms.nopriorpd as
+   select *
+   from cms.exclude65
+   where bene_id not in (select bene_id from cms.to_exclude);
+quit;
+
+/* Delete intermediate datasets */
+proc datasets lib=cms nolist noprint;
+   delete merged;
+   delete to_exclude;
+Quit;
