@@ -487,34 +487,55 @@ data cms.nonusersdec2017v2;
     if _N_ > numObs then stop;
 run;
 
+data cms.nonusers2017stack;
+    set cms.nonusersjan2017v2 cms.nonusersfeb2017v2 cms.nonusersmar2017v2 cms.nonusersapr2017v2 cms.nonusersmay2017v2 cms.nonusersjune2017v2 cms.nonusersjuly2017v2 cms.nonusersaug2017v2
+cms.nonuserssep2017v2 cms.nonusersoct2017v2 cms.nonusersnov2017v2 cms.nonusersdec2017v2;
+    diuretics = 0;
+    keep bene_id new_index_date diuretics;
+run;
+proc sql;
+    create table cms.diuretics2017index as
+    select bene_id, min(srvc_dt) as new_index_date
+    from cms.alldrug2017v4
+    where diuretics = 1
+    group by bene_id;
+quit;
+data cms.diuretics2017index;
+    set cms.diuretics2017index;
+    diuretics = 1;
+run;
+data cms.alldrug2017stack;
+    set cms.nonusers2017stack cms.diuretics2017index;
+run;
+
+
+
+
+
 
 /*delete all rows with pd dx 12 months prior to index_date */
 proc sql;
-   create table cms.nopriorpd2017 as
+   create table work.merge as
    select a.*, b.clm_from_dt
-   from cms.exclude65 a
+   from cms.alldrug2017stack a
    left join cms.all_parkinson b
    on a.bene_id = b.bene_id;
 quit;
 
 /* Identify individuals to exclude */
 proc sql;
-   create table cms.to_exclude as
+   create table work.to_exclude as
    select distinct bene_id
-   from cms.merged
-   where intck('month', clm_from_dt, index_date) between -12 and 0;
+   from work.merge
+   where intck('month', clm_from_dt, new_index_date) between -12 and 0;
 quit;
 
 /* Exclude the identified individuals from exclude65 */
 proc sql;
-   create table cms.nopriorpd as
+   create table cms.nopriorpd2017 as
    select *
-   from cms.exclude65
-   where bene_id not in (select bene_id from cms.to_exclude);
+   from cms.alldrug2017stack
+   where bene_id not in (select bene_id from work.to_exclude);
 quit;
 
-/* Delete intermediate datasets */
-proc datasets lib=cms nolist noprint;
-   delete merged;
-   delete to_exclude;
-Quit;
+
