@@ -2,3 +2,487 @@ data cms.alldrug2017;
 set partd17.pde_file_2017;
 keep bene_id gndr_cd srvc_dt days_suply_num bn gnn;
 run;
+
+
+proc sql;
+    create table cms.mbsf17 as
+    select bene_id,sample_group,bene_birth_dt from mbsf17.mbsf_abcd_summary_2017
+    where bene_id in (select bene_id from cms.alldrug2017);
+Quit;
+
+
+proc sort data=cms.mbsf17 out=cms.mbsf17v2 nodupkey;
+    by bene_id;
+run;
+
+proc sort data=cms.alldrug2017;
+    by bene_id;
+run;
+data cms.alldrug2017v2;
+    merge cms.alldrug2017(in=a) cms.mbsf17v2(in=b);
+    by bene_id;
+    birth_date = bene_birth_dt;
+    if a;  
+Run;
+
+data cms.alldrug2017v3;
+    set cms.alldrug2017v2;
+    age = int((2017 - year(birth_date)));
+    if age >= 66;
+run;
+
+data cms.alldrug2017v4;
+    set cms.alldrug2017v3;
+    where sample_group ne ' ';
+run;
+
+data cms.alldrug2017v4;
+  set cms.alldrug2017v4;
+  diuretics = 0;
+  if (upcase(bn) in: ('AMILORIDE', 'MIDAMOR','EPLERENONE', 'INSPRA', ‘SPIRONOLACTONE’, ‘ALDACTONE’, ‘CAROSPIR’, ‘TRIAMTERENE’, ‘DYRENIUM’) 
+ or upcase(gnn) in: ('AMILORIDE', 'MIDAMOR','EPLERENONE', 'INSPRA', ‘SPIRONOLACTONE’, ‘ALDACTONE’, ‘CAROSPIR’, ‘TRIAMTERENE’, ‘DYRENIUM’))
+then diuretics = 1;
+run;
+
+proc sql;
+    create table cms.uniquediuretics as
+    select distinct bene_id
+    from cms.alldrug2017v4
+    where diuretics = 1;
+quit;
+proc sql;
+    create table cms.uniquenonusers as
+    select distinct bene_id
+    from cms.alldrug2017v4
+    where bene_id not in (select bene_id from cms.uniquediuretics);
+quit;
+
+
+
+proc sql;
+    create table mindates as
+    select bene_id, min(srvc_dt) as index_date
+    from cms.alldrug2017v4
+    where diuretics = 1
+    group by bene_id;
+quit;
+
+proc sql;
+    create table cms.diuretics2017 as
+    select *
+    from cms.alldrug2017v4
+    where bene_id in (select bene_id from cms.uniquediuretics);
+quit;
+
+proc sql;
+    create table cms.nonusers2017 as
+    select *
+    from cms.alldrug2017v4
+    where bene_id in (select bene_id from cms.uniquenonusers);
+quit;
+
+
+proc sql;
+    create table nonusersmindates as
+    select bene_id, min(srvc_dt) as index_date
+    from cms.nonusers2017
+    group by bene_id;
+quit;
+
+data jan_mindates; /*147488*/
+    set work.mindates;
+    where month(index_date) = 1;
+run;
+
+data jan_nonusersmindates; /*4673011*/
+    set work.nonusersmindates;
+    where month(index_date) = 1;
+run;
+
+proc surveyselect data=jan_nonusersmindates out=cms.nonusersjan2017
+                  method=SRS /* Simple Random Sampling, without replacement */
+                  sampsize=442464 /* Replace 'x' with the number of observations you want to select */
+                  seed=123
+                  noprint; 
+run;
+
+data jan_mindates_repeated;
+    set work.jan_mindates;
+    by bene_id;
+    do i = 1 to 3;
+        output;
+    end;
+    drop i;
+run;
+
+data cms.nonusersjan2017v2;
+    set cms.nonusersjan2017;
+    if _N_ = 1 then set jan_mindates_repeated(keep=index_date rename=(index_date=new_index_date)) nobs=numObs;
+    set jan_mindates_repeated(keep=index_date rename=(index_date=new_index_date)) point=_N_;
+    if _N_ > numObs then stop;
+run;
+
+
+data feb_mindates; /*78294*/
+    set work.mindates;
+    where month(index_date) = 2;
+run;
+
+data feb_nonusersmindates; /*805435*/
+    set work.nonusersmindates;
+    where month(index_date) = 2;
+run;
+
+proc surveyselect data=feb_nonusersmindates out=cms.nonusersfeb2017
+                  method=SRS /* Simple Random Sampling, without replacement */
+                  sampsize=234882 /* Replace 'x' with the number of observations you want to select */
+                  seed=123
+                  noprint; 
+run;
+
+data feb_mindates_repeated;
+    set work.feb_mindates;
+    by bene_id;
+    do i = 1 to 3;
+        output;
+    end;
+    drop i;
+run;
+
+data cms.nonusersfeb2017v2;
+    set cms.nonusersfeb2017;
+    if _N_ = 1 then set feb_mindates_repeated(keep=index_date rename=(index_date=new_index_date)) nobs=numObs;
+    set feb_mindates_repeated(keep=index_date rename=(index_date=new_index_date)) point=_N_;
+    if _N_ > numObs then stop;
+run;
+
+
+data mar_mindates; /*68496*/
+    set work.mindates;
+    where month(index_date) = 3;
+run;
+
+data mar_nonusersmindates; /*381694*/
+    set work.nonusersmindates;
+    where month(index_date) = 3;
+run;
+
+proc surveyselect data=mar_nonusersmindates out=cms.nonusersmar2017
+                  method=SRS /* Simple Random Sampling, without replacement */
+                  sampsize=205488 /* Replace 'x' with the number of observations you want to select */
+                  seed=123
+                  noprint; 
+run;
+
+data mar_mindates_repeated;
+    set work.mar_mindates;
+    by bene_id;
+    do i = 1 to 3;
+        output;
+    end;
+    drop i;
+run;
+
+data cms.nonusersmar2017v2;
+    set cms.nonusersmar2017;
+    if _N_ = 1 then set mar_mindates_repeated(keep=index_date rename=(index_date=new_index_date)) nobs=numObs;
+    set mar_mindates_repeated(keep=index_date rename=(index_date=new_index_date)) point=_N_;
+    if _N_ > numObs then stop;
+run;
+
+data apr_mindates; /*24481*/
+    set work.mindates;
+    where month(index_date) = 4;
+run;
+
+data apr_nonusersmindates; /*127924*/
+    set work.nonusersmindates;
+    where month(index_date) = 4;
+run;
+
+proc surveyselect data=apr_nonusersmindates out=cms.nonusersapr2017
+                  method=SRS /* Simple Random Sampling, without replacement */
+                  sampsize=73443 /* Replace 'x' with the number of observations you want to select */
+                  seed=123
+                  noprint; 
+run;
+
+data apr_mindates_repeated;
+    set work.apr_mindates;
+    by bene_id;
+    do i = 1 to 3;
+        output;
+    end;
+    drop i;
+run;
+
+data cms.nonusersapr2017v2;
+    set cms.nonusersapr2017;
+    if _N_ = 1 then set apr_mindates_repeated(keep=index_date rename=(index_date=new_index_date)) nobs=numObs;
+    set apr_mindates_repeated(keep=index_date rename=(index_date=new_index_date)) point=_N_;
+    if _N_ > numObs then stop;
+run;
+
+data may_mindates; /*16343*/
+    set work.mindates;
+    where month(index_date) = 5;
+run;
+
+data may_nonusersmindates; /*80405*/
+    set work.nonusersmindates;
+    where month(index_date) = 5;
+run;
+
+proc surveyselect data=may_nonusersmindates out=cms.nonusersmay2017
+                  method=SRS /* Simple Random Sampling, without replacement */
+                  sampsize=49029 /* Replace 'x' with the number of observations you want to select */
+                  seed=123
+                  noprint; 
+run;
+
+data may_mindates_repeated;
+    set work.may_mindates;
+    by bene_id;
+    do i = 1 to 3;
+        output;
+    end;
+    drop i;
+run;
+
+data cms.nonusersmay2017v2;
+    set cms.nonusersmay2017;
+    if _N_ = 1 then set may_mindates_repeated(keep=index_date rename=(index_date=new_index_date)) nobs=numObs;
+    set may_mindates_repeated(keep=index_date rename=(index_date=new_index_date)) point=_N_;
+    if _N_ > numObs then stop;
+run;
+
+data june_mindates; /*12700*/
+    set work.mindates;
+    where month(index_date) = 6;
+run;
+
+data june_nonusersmindates; /*58970*/
+    set work.nonusersmindates;
+    where month(index_date) = 6;
+run;
+
+proc surveyselect data=june_nonusersmindates out=cms.nonusersjune2017
+                  method=SRS /* Simple Random Sampling, without replacement */
+                  sampsize=38100 /* Replace 'x' with the number of observations you want to select */
+                  seed=123
+                  noprint; 
+run;
+
+data june_mindates_repeated;
+    set work.june_mindates;
+    by bene_id;
+    do i = 1 to 3;
+        output;
+    end;
+    drop i;
+run;
+
+data cms.nonusersjune2017v2;
+    set cms.nonusersjune2017;
+    if _N_ = 1 then set june_mindates_repeated(keep=index_date rename=(index_date=new_index_date)) nobs=numObs;
+    set june_mindates_repeated(keep=index_date rename=(index_date=new_index_date)) point=_N_;
+    if _N_ > numObs then stop;
+run;
+
+data july_mindates; /*10103*/
+    set work.mindates;
+    where month(index_date) = 7;
+run;
+
+data july_nonusersmindates; /*52891*/
+    set work.nonusersmindates;
+    where month(index_date) = 7;
+run;
+
+proc surveyselect data=july_nonusersmindates out=cms.nonusersjuly2017
+                  method=SRS /* Simple Random Sampling, without replacement */
+                  sampsize=30309 /* Replace 'x' with the number of observations you want to select */
+                  seed=123
+                  noprint; 
+run;
+
+data july_mindates_repeated;
+    set work.july_mindates;
+    by bene_id;
+    do i = 1 to 3;
+        output;
+    end;
+    drop i;
+run;
+
+data cms.nonusersjuly2017v2;
+    set cms.nonusersjuly2017;
+    if _N_ = 1 then set july_mindates_repeated(keep=index_date rename=(index_date=new_index_date)) nobs=numObs;
+    set july_mindates_repeated(keep=index_date rename=(index_date=new_index_date)) point=_N_;
+    if _N_ > numObs then stop;
+run;
+
+data aug_mindates; /*9601*/
+    set work.mindates;
+    where month(index_date) = 8;
+run;
+
+data aug_nonusersmindates; /*45514*/
+    set work.nonusersmindates;
+    where month(index_date) = 8;
+run;
+
+proc surveyselect data=aug_nonusersmindates out=cms.nonusersaug2017
+                  method=SRS /* Simple Random Sampling, without replacement */
+                  sampsize=28803 /* Replace 'x' with the number of observations you want to select */
+                  seed=123
+                  noprint; 
+run;
+
+data aug_mindates_repeated;
+    set work.aug_mindates;
+    by bene_id;
+    do i = 1 to 3;
+        output;
+    end;
+    drop i;
+run;
+
+data cms.nonusersaug2017v2;
+    set cms.nonusersaug2017;
+    if _N_ = 1 then set aug_mindates_repeated(keep=index_date rename=(index_date=new_index_date)) nobs=numObs;
+    set aug_mindates_repeated(keep=index_date rename=(index_date=new_index_date)) point=_N_;
+    if _N_ > numObs then stop;
+run;
+
+data sep_mindates; /*8152*/
+    set work.mindates;
+    where month(index_date) = 9;
+run;
+
+data sep_nonusersmindates; /*37851*/
+    set work.nonusersmindates;
+    where month(index_date) = 9;
+run;
+
+proc surveyselect data=sep_nonusersmindates out=cms.nonuserssep2017
+                  method=SRS /* Simple Random Sampling, without replacement */
+                  sampsize=24456 /* Replace 'x' with the number of observations you want to select */
+                  seed=123
+                  noprint; 
+run;
+
+data sep_mindates_repeated;
+    set work.sep_mindates;
+    by bene_id;
+    do i = 1 to 3;
+        output;
+    end;
+    drop i;
+run;
+
+data cms.nonuserssep2017v2;
+    set cms.nonuserssep2017;
+    if _N_ = 1 then set sep_mindates_repeated(keep=index_date rename=(index_date=new_index_date)) nobs=numObs;
+    set sep_mindates_repeated(keep=index_date rename=(index_date=new_index_date)) point=_N_;
+    if _N_ > numObs then stop;
+run;
+
+data oct_mindates; /*8313*/
+    set work.mindates;
+    where month(index_date) = 10;
+run;
+
+data oct_nonusersmindates; /*35843*/
+    set work.nonusersmindates;
+    where month(index_date) = 10;
+run;
+
+proc surveyselect data=oct_nonusersmindates out=cms.nonusersoct2017
+                  method=SRS /* Simple Random Sampling, without replacement */
+                  sampsize=24939 /* Replace 'x' with the number of observations you want to select */
+                  seed=123
+                  noprint; 
+run;
+
+data oct_mindates_repeated;
+    set work.oct_mindates;
+    by bene_id;
+    do i = 1 to 3;
+        output;
+    end;
+    drop i;
+run;
+
+data cms.nonusersoct2017v2;
+    set cms.nonusersoct2017;
+    if _N_ = 1 then set oct_mindates_repeated(keep=index_date rename=(index_date=new_index_date)) nobs=numObs;
+    set oct_mindates_repeated(keep=index_date rename=(index_date=new_index_date)) point=_N_;
+    if _N_ > numObs then stop;
+run;
+
+data nov_mindates; /*7786*/
+    set work.mindates;
+    where month(index_date) = 11;
+run;
+
+data nov_nonusersmindates; /*30751*/
+    set work.nonusersmindates;
+    where month(index_date) = 11;
+run;
+
+proc surveyselect data=nov_nonusersmindates out=cms.nonusersnov2017
+                  method=SRS /* Simple Random Sampling, without replacement */
+                  sampsize=23358 /* Replace 'x' with the number of observations you want to select */
+                  seed=123
+                  noprint; 
+run;
+
+data nov_mindates_repeated;
+    set work.nov_mindates;
+    by bene_id;
+    do i = 1 to 3;
+        output;
+    end;
+    drop i;
+run;
+
+data cms.nonusersnov2017v2;
+    set cms.nonusersnov2017;
+    if _N_ = 1 then set nov_mindates_repeated(keep=index_date rename=(index_date=new_index_date)) nobs=numObs;
+    set nov_mindates_repeated(keep=index_date rename=(index_date=new_index_date)) point=_N_;
+    if _N_ > numObs then stop;
+run;
+
+data dec_mindates; /*7323*/
+    set work.mindates;
+    where month(index_date) = 12;
+run;
+
+data dec_nonusersmindates; /*26566*/
+    set work.nonusersmindates;
+    where month(index_date) = 12;
+run;
+
+proc surveyselect data=dec_nonusersmindates out=cms.nonusersdec2017
+                  method=SRS /* Simple Random Sampling, without replacement */
+                  sampsize=21969 /* Replace 'x' with the number of observations you want to select */
+                  seed=123
+                  noprint; 
+run;
+
+data dec_mindates_repeated;
+    set work.dec_mindates;
+    by bene_id;
+    do i = 1 to 3;
+        output;
+    end;
+    drop i;
+run;
+
+data cms.nonusersdec2017v2;
+    set cms.nonusersdec2017;
+    if _N_ = 1 then set dec_mindates_repeated(keep=index_date rename=(index_date=new_index_date)) nobs=numObs;
+    set dec_mindates_repeated(keep=index_date rename=(index_date=new_index_date)) point=_N_;
+    if _N_ > numObs then stop;
+run;
