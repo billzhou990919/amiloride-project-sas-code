@@ -89,12 +89,187 @@ data cms.cvdday0v5;
     set cms.cvdday0v4;
     where sample_group ne ' ';
 run;
+data cms.cvdday0v5;
+    set cms.cvdday0v5;
+    index_date = srvc_dt;
+run;
+
+proc sql;
+    create table cms.mbsf17cvd as
+    select * from mbsf17.mbsf_abcd_summary_2017
+    where bene_id in (select bene_id from cms.cvdday0v5);
+Quit;
+proc sql;
+    create table cms.mbsf16cvd as
+    select * from mbsf16.mbsf_abcd_summary_2016
+    where bene_id in (select bene_id from cms.cvdday0v5);
+Quit;
 
 
+data cms.mbsfcvd;
+    set cms.mbsf16cvd cms.mbsf17cvd;
+    keep bene_id bene_enrollmt_ref_yr 
+         mdcr_entlmt_buyin_ind_01-mdcr_entlmt_buyin_ind_12 
+         hmo_ind_01-hmo_ind_12 
+         ptc_pbp_id_01-ptc_pbp_id_12 
+         ptd_cntrct_id_01-ptd_cntrct_id_12;
+run;
 
 
+**CONTINUOUS ENROLLMENT;
+%macro _5pbenesum( yr, indata);
+data benesum&yr (keep = bene_id mdcr_entlmt_buyin_ind_01-mdcr_entlmt_buyin_ind_12 hmo_ind_01-hmo_ind_12  HMOIND_&yr BUYIN_&yr);
+  set cms.&indata;
+  HMOIND_&yr = compress(hmo_ind_01||hmo_ind_02||hmo_ind_03||hmo_ind_04||hmo_ind_05||hmo_ind_06||hmo_ind_07||hmo_ind_08||hmo_ind_09||hmo_ind_10||hmo_ind_11||hmo_ind_12, " ");
+  BUYIN_&yr = compress(mdcr_entlmt_buyin_ind_01||mdcr_entlmt_buyin_ind_02||mdcr_entlmt_buyin_ind_03||mdcr_entlmt_buyin_ind_04||mdcr_entlmt_buyin_ind_05||mdcr_entlmt_buyin_ind_06||mdcr_entlmt_buyin_ind_07||mdcr_entlmt_buyin_ind_08||mdcr_entlmt_buyin_ind_09||mdcr_entlmt_buyin_ind_10||mdcr_entlmt_buyin_ind_11||mdcr_entlmt_buyin_ind_12, " ");
+run;
+
+proc sort data=benesum&yr; by bene_id; run;
+
+Proc sql;
+create table  benesum&yr._1 as
+select a.bene_id, a.HMOIND_&yr, a.BUYIN_&yr
+from benesum&yr as a, cms.cvdday0v5 as b
+where a.bene_id = b.bene_id;
+quit;
+
+Proc sort data = benesum&yr._1 nodupkey; by bene_id; run;
+
+%mend _5pbenesum;
+
+%_5pbenesum (2016, mbsf16cvd);	
+%_5pbenesum (2017, mbsf17cvd);			
+
+data benesum_2016_2017 ;				
+  merge benesum2016_1 benesum2017_1;
+  by bene_id;
+run;
+
+Proc sql;
+create table raw_cohort1 as
+select * 
+from  benesum_2016_2017 as a,  cms.cvdday0v5 as b
+where a.bene_id = b.bene_id;
+quit;
+
+data  raw_cohort2; 
+  set raw_cohort1;
+
+   HMOIND = HMOIND_2016||HMOIND_2017;
+   BUYIN = BUYIN_2016||BUYIN_2017;
+
+	PartAB365 = 0;						
+	HMO365=0;				
+
+    Start  = (year(index_date)-2016)*12 + month(index_date) -12;
+	end  = (year(index_date)-2016)*12 + month(index_date) - 1;
+
+	**365 days prior to index date;
+	do i = start to end until (substr (BUYIN,i,1) not in ("3","C"));
+			if substr(BUYIN,i,1)in ("3","C")then PartAB365 + 1; end;
+
+	do j=start to end until (substr(HMOIND,j,1)not in ("0"));
+		if substr(HMOIND,j,1) in ("0")then HMO365+1; end;	
+
+	if partAB365 = (end-start)+1 and hmo365 = (end-start) + 1 then cont_12mon = 1; else cont_12mon = 0;
+
+run;
 
 
+data raw_cohort3; 	
+set raw_cohort2;
+where cont_12mon = 1;
+run;
+
+data cms.cvdday0v6;
+    set raw_cohort3;
+run;
+
+/*delete all rows with pd dx 12 months prior to index_date */
+proc sql;
+   create table work.merge as
+   select a.*, b.clm_from_dt
+   from cms.cvdday0v6 a
+   left join cms.all_parkinson b
+   on a.bene_id = b.bene_id;
+quit;
+
+/* Identify individuals to exclude */
+proc sql;
+   create table work.to_exclude as
+   select distinct bene_id
+   from work.merge
+   where intck('month', clm_from_dt, index_date) between -12 and 0;
+quit;
+
+/* Exclude the identified individuals from exclude65 */
+proc sql;
+   create table cms.nopriorpdcvd2017 as
+   select *
+   from cms.cvdday0v6
+   where bene_id not in (select bene_id from work.to_exclude);
+quit;
+
+
+/*getting pd indicator and dx time*/
+proc sort data=cms.nopriorpdcvd2017; by bene_id; run;
+
+/* Merge the summary dataset with all_bleeding based on enrolid */
+data cms.merged_dataset;
+    merge cms.nopriorpdcvd2017(in=a) cms.all_parkinson(in=b);
+    by bene_id;
+    if a and b; /* This keeps only the matched records */
+run;
+
+/* Filter the rows based on the date conditions and create a new dataset */
+data cms.adverse_event_cvd;
+    set cms.merged_dataset;
+    if clm_from_dt >= index_date;
+Run;
+
+Proc datasets library=cms nolist;
+Delete merged_dataset;
+Run;
+
+/*only keeping the first bleeding event*/
+/* Sort the dataset by enrolid and admdate */
+proc sort data=cms.adverse_event_cvd;
+    by bene_id clm_from_dt;
+run;
+
+/* Keep only the first occurrence of each enrolid (i.e., the row with the earliest admdate) */
+data cms.adverse_event_cvd; 
+    set cms.adverse_event_cvd;
+    by bene_id;
+    if first.bene_id;
+run;
+
+proc sql;
+    create table cms.study_cohort_2017_cvd as
+    select a.*, b.clm_from_dt
+    from cms.nopriorpdcvd2017 as a
+    left join cms.adverse_event_cvd as b
+    on a.bene_id = b.bene_id;
+quit;
+
+data cms.study_cohort_2017_cvd;
+set cms.study_cohort_2017_cvd;
+pd = 0;
+if clm_from_dt ne . then pd = 1;
+run;
+
+data cms.study_cohort_2017_cvd; 
+    set cms.study_cohort_2017_cvd;
+    study_end = 21914;
+    censor_date = min(of clm_from_dt study_end);
+    format censor_date index_date clm_from_dt MMDDYY10.; 
+run;
+
+/*calculate survival time*/
+data cms.study_cohort_2017_cvd; 
+    set cms.study_cohort_2017_cvd;
+    survival_time = censor_date - index_date;
+run;
 
 
 
