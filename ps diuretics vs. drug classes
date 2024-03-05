@@ -271,10 +271,63 @@ data cms.study_cohort_2017_cvd;
     survival_time = censor_date - index_date;
 run;
 
+proc freq data=cms.study_cohort_2017_cvd;
+	table acei * pd;
+run;
+proc freq data=cms.study_cohort_2017_cvd;
+	table arb * pd;
+run;
+proc freq data=cms.study_cohort_2017_cvd;
+	table av * pd;
+run;
+proc freq data=cms.study_cohort_2017_cvd;
+	table antiarrhythimcs * pd;
+run;
+proc freq data=cms.study_cohort_2017_cvd;
+	table antiplatelets * pd;
+run;
+proc freq data=cms.study_cohort_2017_cvd;
+	table bb * pd;
+run;
+proc freq data=cms.study_cohort_2017_cvd;
+	table ccb * pd;
+run;
+proc freq data=cms.study_cohort_2017_cvd;
+	table otherdiuretics * pd;
+run;
 
+data filtered;
+    set cms.study_cohort_2017_cvd;
+    if ccb = 1 or otherdiuretics = 1;
+run;
 
+/* Calculate person-time and event counts for psdiuretics group */
+proc sql;
+    create table ccb_group as
+    select sum(pd) as events, sum(survival_time) as person_time
+    from filtered
+    where ccb = 1;
+quit;
 
+/* Calculate person-time and event counts for ACEI group */
+proc sql;
+    create table otherdiuretics_group as
+    select sum(pd) as events, sum(survival_time) as person_time
+    from filtered
+    where otherdiuretics = 1;
+quit;
 
+/* Calculate incidence rates */
+data rates;
+    set ccb_group (in=a) otherdiuretics_group (in=b);
+    if a then Group = "ccb";
+    else if b then Group = "otherdiuretics";
+    Incidence_Rate = events / person_time;
+run;
+
+proc print data=rates;
+    title "Incidence Rates for ccb vs otherdiuretics";
+run;
 
 
 
