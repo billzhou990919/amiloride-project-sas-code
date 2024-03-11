@@ -298,35 +298,35 @@ run;
 
 data filtered;
     set cms.study_cohort_2017_cvd;
-    if ccb = 1 or otherdiuretics = 1;
+    if psdiuretics = 1 or arb = 1;
 run;
 
 /* Calculate person-time and event counts for psdiuretics group */
 proc sql;
-    create table ccb_group as
+    create table psdiuretics_group as
     select sum(pd) as events, sum(survival_time) as person_time
     from filtered
-    where ccb = 1;
+    where psdiuretics = 1;
 quit;
 
-/* Calculate person-time and event counts for ACEI group */
+/* Calculate person-time and event counts for psdiuretics group */
 proc sql;
-    create table otherdiuretics_group as
+    create table arb_group as
     select sum(pd) as events, sum(survival_time) as person_time
     from filtered
-    where otherdiuretics = 1;
+    where arb = 1;
 quit;
 
 /* Calculate incidence rates */
 data rates;
-    set ccb_group (in=a) otherdiuretics_group (in=b);
-    if a then Group = "ccb";
-    else if b then Group = "otherdiuretics";
+    set psdiuretics_group (in=a) arb_group (in=b);
+    if a then Group = "psdiuretics";
+    else if b then Group = "arb";
     Incidence_Rate = events / person_time;
 run;
 
 proc print data=rates;
-    title "Incidence Rates for ccb vs otherdiuretics";
+    title "Incidence Rates for psdiuretics vs arb";
 run;
 
 
