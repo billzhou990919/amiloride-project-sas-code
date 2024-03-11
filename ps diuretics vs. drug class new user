@@ -42,3 +42,37 @@ proc sql;
     from cms.study_cohort_2017_cvd
     where bene_id not in (select bene_id from exclude_individuals);
 Quit;
+
+
+data filtered;
+    set cms.study_cohort_2017_cvd_new;
+    if bb = 1 or otherdiuretics = 1;
+run;
+
+/* Calculate person-time and event counts for bb group */
+proc sql;
+    create table bb_group as
+    select sum(pd) as events, sum(survival_time) as person_time
+    from filtered
+    where bb = 1;
+quit;
+
+/* Calculate person-time and event counts for bb group */
+proc sql;
+    create table otherdiuretics_group as
+    select sum(pd) as events, sum(survival_time) as person_time
+    from filtered
+    where otherdiuretics = 1;
+quit;
+
+/* Calculate incidence rates */
+data rates;
+    set bb_group (in=a) otherdiuretics_group (in=b);
+    if a then Group = "bb";
+    else if b then Group = "otherdiuretics";
+    Incidence_Rate = events / person_time;
+run;
+
+proc print data=rates;
+    title "Incidence Rates for bb vs otherdiuretics";
+run;
