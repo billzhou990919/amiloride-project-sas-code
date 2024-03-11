@@ -1,1 +1,13 @@
-405854
+data _null_;
+    set cms.study_cohort_2017_cvd   nobs=nobs_var;
+    call symput('obs_count', nobs_var);
+    stop;
+run;
+
+proc sql noprint;
+    select count(distinct bene_id) into :unique_patients
+    from cms.study_cohort_2017_cvd;
+quit;
+
+%put Number of Observationsvvvvv: &obs_count;
+%put Number of Unique Patients (bene_id): &unique_patients;
