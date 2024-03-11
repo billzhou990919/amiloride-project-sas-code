@@ -11,3 +11,18 @@ quit;
 
 %put Number of Observationsvvvvv: &obs_count;
 %put Number of Unique Patients (bene_id): &unique_patients;
+
+
+proc sql;
+    create table exclude_individuals as
+    select distinct a.bene_id
+    from cms.study_cohort_2017_cvd as a, cms.cvd_drug_claims as b
+    where a.bene_id = b.bene_id
+    and b.srvc_dt between (a.index_date - 365) and a.index_date;
+Quit;
+proc sql;
+    create table cms.study_cohort_2017_cvd_new as
+    select *
+    from cms.study_cohort_2017_cvd
+    where bene_id not in (select bene_id from exclude_individuals);
+Quit;
