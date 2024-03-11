@@ -12,6 +12,14 @@ quit;
 %put Number of Observationsvvvvv: &obs_count;
 %put Number of Unique Patients (bene_id): &unique_patients;
 
+data cms.alldrug2016;
+set partd17.pde_file_2016;
+keep bene_id gndr_cd srvc_dt days_suply_num bn gnn;
+run;
+
+data cms.cvd_drug_claims;
+    set cms.alldrug2016;
+    if 
 
 proc sql;
     create table exclude_individuals as
