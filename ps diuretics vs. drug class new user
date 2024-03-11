@@ -1,12 +1,12 @@
 data _null_;
-    set cms.study_cohort_2017_cvd   nobs=nobs_var;
+    set cms.study_cohort_2017_cvd_new   nobs=nobs_var;
     call symput('obs_count', nobs_var);
     stop;
 run;
 
 proc sql noprint;
     select count(distinct bene_id) into :unique_patients
-    from cms.study_cohort_2017_cvd;
+    from cms.study_cohort_2017_cvd_new;
 quit;
 
 %put Number of Observationsvvvvv: &obs_count;
