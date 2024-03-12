@@ -184,3 +184,11 @@ proc means data=cms.study_cohort_2017_cvd_new mean;
     where otherdiuretics = 1;
 run;
 
+
+/*hazard ratio*/
+proc phreg data=cms.study_cohort_2017_cvd_new ;
+    class psdiuretics acei arb av antiarrhythimcs antiplatelets bb ccb otherdiuretics;
+    model survival_time*pd(0) = psdiuretics acei arb av antiarrhythimcs antiplatelets bb ccb otherdiuretics / ties=breslow;
+    hazardratio 'psdiuretics' psdiuretics;
+run;
+
