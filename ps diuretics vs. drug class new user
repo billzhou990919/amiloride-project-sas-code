@@ -104,3 +104,83 @@ run;
 proc freq data=cms.study_cohort_2017_cvd_new;
 	table otherdiuretics * pd;
 run;
+
+/*////////////////Mean age/////////////////*/
+proc means data=cms.study_cohort_2017_cvd mean;
+    var age;
+    where psdiuretics = 1;
+run;
+proc means data=cms.study_cohort_2017_cvd mean;
+    var age;
+    where acei = 1;
+run;
+proc means data=cms.study_cohort_2017_cvd mean;
+    var age;
+    where arb = 1;
+run;
+proc means data=cms.study_cohort_2017_cvd mean;
+    var age;
+    where av = 1;
+run;
+proc means data=cms.study_cohort_2017_cvd mean;
+    var age;
+    where antiarrhythimcs = 1;
+run;
+proc means data=cms.study_cohort_2017_cvd mean;
+    var age;
+    where antiplatelets = 1;
+run;
+proc means data=cms.study_cohort_2017_cvd mean;
+    var age;
+    where bb = 1;
+run;
+proc means data=cms.study_cohort_2017_cvd mean;
+    var age;
+    where ccb = 1;
+run;
+proc means data=cms.study_cohort_2017_cvd mean;
+    var age;
+    where otherdiuretics = 1;
+run;
+
+
+
+
+
+proc means data=cms.study_cohort_2017_cvd_new mean;
+    var age;
+    where psdiuretics = 1;
+run;
+proc means data=cms.study_cohort_2017_cvd_new mean;
+    var age;
+    where acei = 1;
+run;
+proc means data=cms.study_cohort_2017_cvd_new mean;
+    var age;
+    where arb = 1;
+run;
+proc means data=cms.study_cohort_2017_cvd_new mean;
+    var age;
+    where av = 1;
+run;
+proc means data=cms.study_cohort_2017_cvd_new mean;
+    var age;
+    where antiarrhythimcs = 1;
+run;
+proc means data=cms.study_cohort_2017_cvd_new mean;
+    var age;
+    where antiplatelets = 1;
+run;
+proc means data=cms.study_cohort_2017_cvd_new mean;
+    var age;
+    where bb = 1;
+run;
+proc means data=cms.study_cohort_2017_cvd_new mean;
+    var age;
+    where ccb = 1;
+run;
+proc means data=cms.study_cohort_2017_cvd_new mean;
+    var age;
+    where otherdiuretics = 1;
+run;
+
