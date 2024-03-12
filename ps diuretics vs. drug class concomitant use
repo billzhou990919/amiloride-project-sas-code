@@ -151,42 +151,42 @@ run;
 
 data cms.allcvddrug2017_beneid_concom;
   set cms.allcvddrug2017_beneid_updated;
-  psdiuretics_acei =.;
-  psdiuretics_arb =.;
-  psdiuretics_av =.;
-  psdiuretics_antiarrhythimcs =.;
-  psdiuretics_antiplatelets =.;
-  psdiuretics_bb =.;
-  psdiuretics_ccb =.;
-  psdiuretics_other =.;
-  acei_arb =.;
-  acei_av =.;
-  acei_antiarrhythimcs =.;
-  acei_antiplatelets =.;
-  acei_bb =.;
-  acei_ccb =.;
-  acei_other =.;
-  arb_av =.;
-  arb_antiarrhythimcs =.;
-  arb_antiplatelets =.;
-  arb_bb =.;
-  arb_ccb =.;
-  arb_other =.;
-  av_antiarrhythimcs =.;
-  av_antiplatelets =.;
-  av_bb =.;
-  av_ccb =.;
-  av_other =.;
-  antiarrhythimcs_antiplatelets =.;
-  antiarrhythimcs_bb =.;
-  antiarrhythimcs_ccb =.;
-  antiarrhythimcs_other =.;
-  antiplatelets_bb =.;
-  antiplatelets_ccb =.;
-  antiplatelets_other =.;
-  bb_ccb =.;
-  bb_other =.;
-  ccb_other =.;
+  psdiuretics_acei =0;
+  psdiuretics_arb =0;
+  psdiuretics_av =0;
+  psdiuretics_antiarrhythimcs =0;
+  psdiuretics_antiplatelets =0;
+  psdiuretics_bb =0;
+  psdiuretics_ccb =0;
+  psdiuretics_other =0;
+  acei_arb =0;
+  acei_av =0;
+  acei_antiarrhythimcs =0;
+  acei_antiplatelets =0;
+  acei_bb =0;
+  acei_ccb =0;
+  acei_other =0;
+  arb_av =0;
+  arb_antiarrhythimcs =0;
+  arb_antiplatelets =0;
+  arb_bb =0;
+  arb_ccb =0;
+  arb_other =0;
+  av_antiarrhythimcs =0;
+  av_antiplatelets =0;
+  av_bb =0;
+  av_ccb =0;
+  av_other =0;
+  antiarrhythimcs_antiplatelets =0;
+  antiarrhythimcs_bb =0;
+  antiarrhythimcs_ccb =0;
+  antiarrhythimcs_other =0;
+  antiplatelets_bb =0;
+  antiplatelets_ccb =0;
+  antiplatelets_other =0.;
+  bb_ccb =0;
+  bb_other =0;
+  ccb_other =0;
   if not missing(psdiuretics_day0) and not missing(acei_day0) then do;
         if abs(psdiuretics_day0 - acei_day0) <= 15 then do;
             psdiuretics_acei = 1;
@@ -371,13 +371,49 @@ data cms.allcvddrug2017_beneid_concom;
  run;
 
 
- data cms.allcvddrug2017_beneid_concom;
-   set cms.allcvddrug2017_beneid_concom;
-   sum = psdiuretics_acei + psdiuretics_arb + psdiuretics_av + psdiuretics_antiarrhythimcs + 
-   psdiuretics_antiplatelets + psdiuretics_bb + psdiuretics_ccb + psdiuretics_other + acei_arb + acei_av + acei_antiarrhythimcs + 
-   acei_antiplatelets + acei_bb + acei_ccb + acei_other + arb_av + arb_antiarrhythimcs + arb_antiplatelets + arb_bb + arb_ccb + arb_other + 
-   av_antiarrhythimcs + av_antiplatelets + av_bb + av_ccb + av_other + antiarrhythimcs_antiplatelets + antiarrhythimcs_bb + 
-   antiarrhythimcs_ccb + antiarrhythimcs_other + antiplatelets_bb + antiplatelets_ccb + antiplatelets_other;
+
+
+proc sql;
+    create table cms.cvdnewuser2017_concom as
+    select * from cms.allcvddrug2017_beneid_concom
+    where bene_id in (select bene_id from cms.study_cohort_2017_cvd_new);
+Quit;
+proc sql;
+    create table cms.cvd2017_concom as
+    select * from cms.allcvddrug2017_beneid_concom
+    where bene_id in (select bene_id from cms.study_cohort_2017_cvd);
+Quit;
+
+ data cms.cvdnewuser2017_concom;
+   set cms.cvdnewuser2017_concom;
+   sum  = psdiuretics_acei + psdiuretics_arb + psdiuretics_av + 
+psdiuretics_antiarrhythimcs + psdiuretics_antiplatelets + psdiuretics_bb + 
+psdiuretics_ccb + psdiuretics_other + acei_arb + acei_av + acei_antiarrhythimcs + 
+acei_antiplatelets + acei_bb + acei_ccb + acei_other + arb_av + arb_antiarrhythimcs + 
+arb_antiplatelets + arb_bb + arb_ccb + arb_other + av_antiarrhythimcs + av_antiplatelets +
+av_bb + av_ccb + av_other + antiarrhythimcs_antiplatelets + antiarrhythimcs_bb + 
+antiarrhythimcs_ccb + antiarrhythimcs_other + antiplatelets_bb + antiplatelets_ccb + 
+antiplatelets_other + bb_ccb + bb_other + ccb_other;
+
+  run;
+ data cms.cvd2017_concom;
+   set cms.cvd2017_concom;
+   sum = psdiuretics_acei + psdiuretics_arb + psdiuretics_av + 
+psdiuretics_antiarrhythimcs + psdiuretics_antiplatelets + psdiuretics_bb + 
+psdiuretics_ccb + psdiuretics_other + acei_arb + acei_av + acei_antiarrhythimcs + 
+acei_antiplatelets + acei_bb + acei_ccb + acei_other + arb_av + arb_antiarrhythimcs + 
+arb_antiplatelets + arb_bb + arb_ccb + arb_other + av_antiarrhythimcs + av_antiplatelets +
+av_bb + av_ccb + av_other + antiarrhythimcs_antiplatelets + antiarrhythimcs_bb + 
+antiarrhythimcs_ccb + antiarrhythimcs_other + antiplatelets_bb + antiplatelets_ccb + 
+antiplatelets_other + bb_ccb + bb_other + ccb_other;
   run;
 
-  
+
+proc freq data=cms.cvd2017_concom;
+table sum;
+run;
+
+proc freq data=cms.cvdnewuser2017_concom;
+table sum;
+run;
+
