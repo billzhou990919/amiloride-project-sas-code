@@ -1,0 +1,383 @@
+data cms.allcvddrug2017;
+  set cms.allcvddrug2017;
+  psdiuretics = 0;
+  acei = 0;
+  arb = 0;
+  av = 0;
+  antiarrhythimcs = 0;
+  antiplatelets = 0;
+  bb = 0;
+  ccb = 0;
+  otherdiuretics = 0;
+  if upcase(gnn) in: ('AMILORIDE', 'EPLERENONE', 'SPIRONOLACTONE', 'TRIAMTERENE') then psdiuretics = 1;
+  if upcase(gnn) in: ('BENAZEPRIL', 'CAPTOPRIL', 'CILAZAPRIL', 'ENALAPRIL', 'ENALAPRILAT', 'FOSINOPRIL', 'LISINOPRIL', 'MOEXIPRIL', 'PERINDOPRIL', 'QUINAPRIL', 'RAMIPRIL', 
+'TRANDOLAPRIL', 'SPIRAPRIL', 'TEMOCAPRIL', 'ZOFENOPRIL', 'IMIDAPRIL', 'DELAPRIL') then acei = 1;
+  if upcase(gnn) in: ('VALSARTAN', 'OLMESARTAN', 'EPROSARTAN', 'TELMISARTAN', 'IRBESARTAN', 'TASOSARTAN', 'AZILSARTAN', 'FIMASARTAN', 'CANDESARTAN', 'LOSARTAN') then arb = 1;
+  if upcase(gnn) in: ('NITROGLYCERIN', 'GLYCERYL TRINITRATE', 'ISOSORBIDE DINITRATE', 'ISOSORBIDE MONONITRATE', 'ERYTHRITYL TETRANITRATE', 'PENTAERYTHRITOL TETRANITRATE', 
+'NICORANDIL', 'MOLSIDOMINE', 'TRAPIDIL', 'IMOLAMINE', 'HEXOBENDINE') then av = 1;
+  if upcase(gnn) in: ('QUINIDINE', 'PROCAINAMIDE', 'DISOPYRAMIDE', 'SPARTEINE', 'AJMALINE', 'PRAJMALINE', 'LORAJMINE', 'HYDROQUINIDINE', 'LIDOCAINE', 'MEXILETINE', 'TOCAINIDE',
+'APRINDINE', 'PROPAFENONE', 'FLECAINIDE', 'LORCAINIDE', 'ENCAINIDE', 'ETHACIZINE', 'AMIODARONE', 'BRETYLIUM', 'BUNAFTINE', 'DOFETILIDE', 'IBUTILIDE', 'TEDISAMIL', 'DRONEDARONE', 
+'MORACIZINE', 'CIBENZOLINE', 'VERNAKALANT') then antiarrhythimcs = 1;
+  if upcase(gnn) in: ('DITAZOLE', 'CLORICROMEN', 'PICOTAMIDE', 'CLOPIDOGREL', 'TICLOPIDINE', 'DIPYRIDAMOLE', 'CARBASALATE CALCIUM', 'EPOPROSTENOL', 'INDOBUFEN', 'ILOPROST', 
+'ABCIXIMAB', 'ALOXIPRIN', 'EPTIFIBATIDE', 'TIROFIBAN', 'TRIFLUSAL', 'BERAPROST', 'TREPROSTINIL', 'PRASUGREL', 'CILOSTAZOL', 'TICAGRELOR', 'CANGRELOR', 'VORAPAXAR', 'SELEXIPAG') then antiplatelets = 1;
+  if upcase(gnn) in: ('ALPRENOLOL', 'OXPRENOLOL', 'PINDOLOL', 'PROPRANOLOL', 'TIMOLOL', 'SOTALOL', 'NADOLOL', 'MEPINDOLOL', 'CARTEOLOL', 'TERTATOLOL', 'BOPINDOLOL', 'BUPRANOLOL', 
+'PENBUTOLOL', 'CLORANOLOL', 'PRACTOLOL', 'METOPROLOL', 'ATENOLOL', 'ACEBUTOLOL', 'BETAXOLOL', 'BEVANTOLOL', 'BISOPROLOL', 'CELIPROLOL', 'ESMOLOL', 'EPANOLOL', 'S-ATENOLOL', 
+'NEBIVOLOL', 'TALINOLOL', 'LANDIOLOL', 'LABETALOL', 'CARVEDILOL') then bb = 1;
+  if upcase(gnn) in: ('AMLODIPINE', 'FELODIPINE', 'ISRADIPINE', 'NICARDIPINE', 'NIFEDIPINE', 'NIMODIPINE', 'NISOLDIPINE', 'NITRENDIPINE', 'LACIDIPINE', 'NILVADIPINE', 'MANIDIPINE',
+'BARNIDIPINE', 'LERCANIDIPINE', 'CILNIDIPINE', 'BENIDIPINE', 'CLEVIDIPINE', 'MIBEFRADIL', 'FENDILINE', 'BEPRIDIL', 'LIDOFLAZINE', 'PERHEXILINE') then ccb = 1;
+  if upcase(gnn) in: ('BENDROFLUMETHIAZIDE', 'HYDROFLUMETHIAZIDE', 'HYDROCHLOROTHIAZIDE', 'CHLOROTHIAZIDE', 'POLYTHIAZIDE', 'TRICHLORMETHIAZIDE', 'CYCLOPENTHIAZIDE',
+'METHYCLOTHIAZIDE', 'CYCLOTHIAZIDE', 'MEBUTIZIDE', 'QUINETHAZONE', 'CLOPAMIDE', 'CHLORTALIDONE', 'MEFRUSIDE', 'CLOFENAMIDE', 'METOLAZONE', 'XIPAMIDE', 'INDAPAMIDE', 
+'CLOREXOLONE', 'FENQUIZONE', 'MERSALYL', 'THEOBROMINE', 'CICLETANINE', 'FUROSEMIDE', 'BUMETANIDE', 'PIRETANIDE', 'TORASEMIDE', 'ETACRYNIC ACID', 'TIENILIC ACID', 
+'MUZOLIMINE', 'ETOZOLIN', 'POTASSIUM CANRENOATE', 'CANRENONE', 'TOLVAPTAN', 'CONIVAPTAN') then otherdiuretics = 1;
+run;
+
+proc sql;
+   create table cms.allcvddrug2017_beneid as
+   select distinct bene_id, . as psdiuretics_day0, . as acei_day0
+   from cms.allcvddrug2017;
+quit;
+
+data cms.allcvddrug2017_beneid;
+  set cms.allcvddrug2017_beneid;
+  psdiuretics_day0 = .;
+  acei_day0 = .;
+  arb_day0 = .;
+  av_day0 = .;
+  antiarrhythimcs_day0 = .;
+  antiplatelets_day0 = .;
+  bb_day0 = .;
+  ccb_day0 = .;
+  otherdiuretics_day0 = .;
+run;
+  
+
+proc sql;
+   create table psdiureticsday0 as
+   select bene_id,
+          min(srvc_dt) as first_psdiuretics
+   from cms.allcvddrug2017
+   where psdiuretics = 1
+   group by bene_id;
+quit;
+proc sql;
+   create table aceiday0 as
+   select distinct bene_id,
+          min(srvc_dt) as first_acei
+   from cms.allcvddrug2017
+   where acei = 1
+   group by bene_id;
+quit;
+proc sql;
+   create table arbday0 as
+   select distinct bene_id,
+          min(srvc_dt) as first_arb
+   from cms.allcvddrug2017
+   where arb = 1
+   group by bene_id;
+quit;
+proc sql;
+   create table antiplateletsday0 as
+   select distinct bene_id,
+          min(srvc_dt) as first_antiplatelets
+   from cms.allcvddrug2017
+   where antiplatelets = 1
+   group by bene_id;
+quit;
+proc sql;
+   create table avday0 as
+   select distinct bene_id,
+          min(srvc_dt) as first_av
+   from cms.allcvddrug2017
+   where av = 1
+   group by bene_id;
+quit;
+proc sql;
+   create table antiarrhythimcsday0 as
+   select distinct bene_id,
+          min(srvc_dt) as first_antiarrhythimcs
+   from cms.allcvddrug2017
+   where antiarrhythimcs = 1
+   group by bene_id;
+quit;
+proc sql;
+   create table bbday0 as
+   select distinct bene_id,
+          min(srvc_dt) as first_bb
+   from cms.allcvddrug2017
+   where bb = 1
+   group by bene_id;
+quit;
+proc sql;
+   create table ccbday0 as
+   select distinct bene_id,
+          min(srvc_dt) as first_ccb
+   from cms.allcvddrug2017
+   where ccb = 1
+   group by bene_id;
+quit;
+proc sql;
+   create table otherdiureticsday0 as
+   select distinct bene_id,
+          min(srvc_dt) as first_otherdiuretics
+   from cms.allcvddrug2017
+   where otherdiuretics = 1
+   group by bene_id;
+quit;
+
+
+
+data cms.allcvddrug2017_beneid_updated;
+  merge cms.allcvddrug2017_beneid(in=a)
+        psdiureticsday0(in=b)
+        aceiday0(in=c)
+        arbday0(in=d)
+        avday0(in=e)
+        antiarrhythimcsday0(in=f)
+        antiplateletsday0(in=g)
+        bbday0(in=h)
+        ccbday0(in=i)
+        otherdiureticsday0(in=j);
+  by bene_id;
+  if b then psdiuretics_day0 = first_psdiuretics;
+  if c then acei_day0 = first_acei;
+  if d then arb_day0 = first_arb;
+  if e then av_day0 = first_av;
+  if f then antiarrhythimcs_day0 = first_antiarrhythimcs;
+  if g then antiplatelets_day0 = first_antiplatelets;
+  if h then bb_day0 = first_bb;
+  if i then ccb_day0 = first_ccb;
+  if j then otherdiuretics_day0 = first_otherdiuretics;
+run;
+
+data cms.allcvddrug2017_beneid_concom;
+  set cms.allcvddrug2017_beneid_updated;
+  psdiuretics_acei =.;
+  psdiuretics_arb =.;
+  psdiuretics_av =.;
+  psdiuretics_antiarrhythimcs =.;
+  psdiuretics_antiplatelets =.;
+  psdiuretics_bb =.;
+  psdiuretics_ccb =.;
+  psdiuretics_other =.;
+  acei_arb =.;
+  acei_av =.;
+  acei_antiarrhythimcs =.;
+  acei_antiplatelets =.;
+  acei_bb =.;
+  acei_ccb =.;
+  acei_other =.;
+  arb_av =.;
+  arb_antiarrhythimcs =.;
+  arb_antiplatelets =.;
+  arb_bb =.;
+  arb_ccb =.;
+  arb_other =.;
+  av_antiarrhythimcs =.;
+  av_antiplatelets =.;
+  av_bb =.;
+  av_ccb =.;
+  av_other =.;
+  antiarrhythimcs_antiplatelets =.;
+  antiarrhythimcs_bb =.;
+  antiarrhythimcs_ccb =.;
+  antiarrhythimcs_other =.;
+  antiplatelets_bb =.;
+  antiplatelets_ccb =.;
+  antiplatelets_other =.;
+  bb_ccb =.;
+  bb_other =.;
+  ccb_other =.;
+  if not missing(psdiuretics_day0) and not missing(acei_day0) then do;
+        if abs(psdiuretics_day0 - acei_day0) <= 15 then do;
+            psdiuretics_acei = 1;
+        end;
+    end;
+  if not missing(psdiuretics_day0) and not missing(arb_day0) then do;
+        if abs(psdiuretics_day0 - arb_day0) <= 15 then do;
+            psdiuretics_arb = 1;
+        end;
+    end;
+  if not missing(psdiuretics_day0) and not missing(av_day0) then do;
+        if abs(psdiuretics_day0 - av_day0) <= 15 then do;
+            psdiuretics_av = 1;
+        end;
+    end;
+  if not missing(psdiuretics_day0) and not missing(antiarrhythimcs_day0) then do;
+        if abs(psdiuretics_day0 - antiarrhythimcs_day0) <= 15 then do;
+            psdiuretics_antiarrhythimcs = 1;
+        end;
+    end;
+  if not missing(psdiuretics_day0) and not missing(antiplatelets_day0) then do;
+        if abs(psdiuretics_day0 - antiplatelets_day0) <= 15 then do;
+            psdiuretics_antiplatelets = 1;
+        end;
+    end;
+  if not missing(psdiuretics_day0) and not missing(bb_day0) then do;
+        if abs(psdiuretics_day0 - bb_day0) <= 15 then do;
+            psdiuretics_bb = 1;
+        end;
+    end;
+  if not missing(psdiuretics_day0) and not missing(ccb_day0) then do;
+        if abs(psdiuretics_day0 - ccb_day0) <= 15 then do;
+            psdiuretics_ccb = 1;
+        end;
+    end;
+  if not missing(psdiuretics_day0) and not missing(otherdiuretics_day0) then do;
+        if abs(psdiuretics_day0 - otherdiuretics_day0) <= 15 then do;
+            psdiuretics_other = 1;
+        end;
+    end;
+  if not missing(acei_day0) and not missing(arb_day0) then do;
+        if abs(acei_day0 - arb_day0) <= 15 then do;
+            acei_arb = 1;
+        end;
+    end;
+  if not missing(acei_day0) and not missing(av_day0) then do;
+        if abs(acei_day0 - av_day0) <= 15 then do;
+            acei_av = 1;
+        end;
+    end;
+  if not missing(acei_day0) and not missing(antiarrhythimcs_day0) then do;
+        if abs(acei_day0 - antiarrhythimcs_day0) <= 15 then do;
+            acei_antiarrhythimcs = 1;
+        end;
+    end;
+    if not missing(acei_day0) and not missing(antiplatelets_day0) then do;
+        if abs(acei_day0 - antiplatelets_day0) <= 15 then do;
+            acei_antiplatelets = 1;
+        end;
+    end;
+    if not missing(acei_day0) and not missing(bb_day0) then do;
+        if abs(acei_day0 - bb_day0) <= 15 then do;
+            acei_bb = 1;
+        end;
+    end;
+    if not missing(acei_day0) and not missing(ccb_day0) then do;
+        if abs(acei_day0 - ccb_day0) <= 15 then do;
+            acei_ccb = 1;
+        end;
+    end;
+    if not missing(acei_day0) and not missing(otherdiuretics_day0) then do;
+        if abs(acei_day0 - otherdiuretics_day0) <= 15 then do;
+            acei_other = 1;
+        end;
+    end;
+    if not missing(arb_day0) and not missing(av_day0) then do;
+        if abs(arb_day0 - av_day0) <= 15 then do;
+            arb_av = 1;
+        end;
+    end;
+    if not missing(arb_day0) and not missing(antiarrhythimcs_day0) then do;
+        if abs(arb_day0 - antiarrhythimcs_day0) <= 15 then do;
+            arb_antiarrhythimcs = 1;
+        end;
+    end;
+    if not missing(arb_day0) and not missing(antiplatelets_day0) then do;
+        if abs(arb_day0 - antiplatelets_day0) <= 15 then do;
+            arb_antiplatelets = 1;
+        end;
+    end;
+    if not missing(arb_day0) and not missing(bb_day0) then do;
+        if abs(arb_day0 - bb_day0) <= 15 then do;
+            arb_bb = 1;
+        end;
+    end;
+    if not missing(arb_day0) and not missing(ccb_day0) then do;
+        if abs(arb_day0 - ccb_day0) <= 15 then do;
+            arb_ccb = 1;
+        end;
+    end;
+    if not missing(arb_day0) and not missing(otherdiuretics_day0) then do;
+        if abs(arb_day0 - otherdiuretics_day0) <= 15 then do;
+            arb_other = 1;
+        end;
+    end;
+    if not missing(av_day0) and not missing(antiarrhythimcs_day0) then do;
+        if abs(av_day0 - antiarrhythimcs_day0) <= 15 then do;
+            av_antiarrhythimcs = 1;
+        end;
+    end;
+    if not missing(av_day0) and not missing(antiplatelets_day0) then do;
+        if abs(av_day0 - antiplatelets_day0) <= 15 then do;
+            av_antiplatelets = 1;
+        end;
+    end;
+    if not missing(av_day0) and not missing(bb_day0) then do;
+        if abs(av_day0 - bb_day0) <= 15 then do;
+            av_bb = 1;
+        end;
+    end;
+    if not missing(av_day0) and not missing(ccb_day0) then do;
+        if abs(av_day0 - ccb_day0) <= 15 then do;
+            av_ccb = 1;
+        end;
+    end;
+    if not missing(av_day0) and not missing(otherdiuretics_day0) then do;
+        if abs(av_day0 - otherdiuretics_day0) <= 15 then do;
+            av_other = 1;
+        end;
+    end;
+    if not missing(antiarrhythimcs_day0) and not missing(antiplatelets_day0) then do;
+        if abs(antiarrhythimcs_day0 - antiplatelets_day0) <= 15 then do;
+            antiarrhythimcs_antiplatelets = 1;
+        end;
+    end;
+    if not missing(antiarrhythimcs_day0) and not missing(bb_day0) then do;
+        if abs(antiarrhythimcs_day0 - bb_day0) <= 15 then do;
+            antiarrhythimcs_bb = 1;
+        end;
+    end;
+    if not missing(antiarrhythimcs_day0) and not missing(ccb_day0) then do;
+        if abs(antiarrhythimcs_day0 - ccb_day0) <= 15 then do;
+            antiarrhythimcs_ccb = 1;
+        end;
+    end;
+    if not missing(antiarrhythimcs_day0) and not missing(otherdiuretics_day0) then do;
+        if abs(antiarrhythimcs_day0 - otherdiuretics_day0) <= 15 then do;
+            antiarrhythimcs_other = 1;
+        end;
+    end;
+    if not missing(antiplatelets_day0) and not missing(bb_day0) then do;
+        if abs(antiplatelets_day0 - bb_day0) <= 15 then do;
+            antiplatelets_bb = 1;
+        end;
+    end;
+    if not missing(antiplatelets_day0) and not missing(ccb_day0) then do;
+        if abs(antiplatelets_day0 - ccb_day0) <= 15 then do;
+            antiplatelets_ccb = 1;
+        end;
+    end;
+    if not missing(antiplatelets_day0) and not missing(otherdiuretics_day0) then do;
+        if abs(antiplatelets_day0 - otherdiuretics_day0) <= 15 then do;
+            antiplatelets_other = 1;
+        end;
+    end;
+    if not missing(bb_day0) and not missing(ccb_day0) then do;
+        if abs(bb_day0 - ccb_day0) <= 15 then do;
+            bb_ccb = 1;
+        end;
+    end;
+    if not missing(bb_day0) and not missing(otherdiuretics_day0) then do;
+        if abs(bb_day0 - otherdiuretics_day0) <= 15 then do;
+            bb_other = 1;
+        end;
+    end;
+    if not missing(ccb_day0) and not missing(otherdiuretics_day0) then do;
+        if abs(ccb_day0 - otherdiuretics_day0) <= 15 then do;
+            ccb_other = 1;
+        end;
+    end;
+    
+ run;
+
+
+ data cms.allcvddrug2017_beneid_concom;
+   set cms.allcvddrug2017_beneid_concom;
+   sum = psdiuretics_acei + psdiuretics_arb + psdiuretics_av + psdiuretics_antiarrhythimcs + 
+   psdiuretics_antiplatelets + psdiuretics_bb + psdiuretics_ccb + psdiuretics_other + acei_arb + acei_av + acei_antiarrhythimcs + 
+   acei_antiplatelets + acei_bb + acei_ccb + acei_other + arb_av + arb_antiarrhythimcs + arb_antiplatelets + arb_bb + arb_ccb + arb_other + 
+   av_antiarrhythimcs + av_antiplatelets + av_bb + av_ccb + av_other + antiarrhythimcs_antiplatelets + antiarrhythimcs_bb + 
+   antiarrhythimcs_ccb + antiarrhythimcs_other + antiplatelets_bb + antiplatelets_ccb + antiplatelets_other;
+  run;
+
+  
