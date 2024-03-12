@@ -186,9 +186,124 @@ run;
 
 
 /*hazard ratio*/
-proc phreg data=cms.study_cohort_2017_cvd_new ;
-    class psdiuretics acei arb av antiarrhythimcs antiplatelets bb ccb otherdiuretics;
-    model survival_time*pd(0) = psdiuretics acei arb av antiarrhythimcs antiplatelets bb ccb otherdiuretics / ties=breslow;
-    hazardratio 'psdiuretics' psdiuretics;
+/*first get drug combination indicators*/
+data cms.study_cohort_2017_cvd_new;
+	set cms.study_cohort_2017_cvd_new;
+	psdiuretics_acei =.;
+	if psdiuretics=1 then psdiuretics_acei=1;
+	if acei=1 then psdiuretics_acei=0;
 run;
+data cms.study_cohort_2017_cvd_new;
+	set cms.study_cohort_2017_cvd_new;
+	psdiuretics_arb =.;
+	if psdiuretics=1 then psdiuretics_arb=1;
+	if arb=1 then psdiuretics_arb=0;
+run;
+data cms.study_cohort_2017_cvd_new;
+	set cms.study_cohort_2017_cvd_new;
+	psdiuretics_av =.;
+	if psdiuretics=1 then psdiuretics_av=1;
+	if av=1 then psdiuretics_av=0;
+run;
+data cms.study_cohort_2017_cvd_new;
+	set cms.study_cohort_2017_cvd_new;
+	psdiuretics_arrhy =.;
+	if psdiuretics=1 then psdiuretics_arrhy=1;
+	if antiarrhythimcs=1 then psdiuretics_arrhy=0;
+run;
+data cms.study_cohort_2017_cvd_new;
+	set cms.study_cohort_2017_cvd_new;
+	psdiuretics_platelets =.;
+	if psdiuretics=1 then psdiuretics_platelets=1;
+	if antiplatelets=1 then psdiuretics_platelets=0;
+run;
+data cms.study_cohort_2017_cvd_new;
+	set cms.study_cohort_2017_cvd_new;
+	psdiuretics_bb =.;
+	if psdiuretics=1 then psdiuretics_bb=1;
+	if bb=1 then psdiuretics_bb=0;
+run;
+data cms.study_cohort_2017_cvd_new;
+	set cms.study_cohort_2017_cvd_new;
+	psdiuretics_ccb =.;
+	if psdiuretics=1 then psdiuretics_ccb=1;
+	if ccb=1 then psdiuretics_ccb=0;
+run;
+data cms.study_cohort_2017_cvd_new;
+	set cms.study_cohort_2017_cvd_new;
+	psdiuretics_otherdiuretics =.;
+	if psdiuretics=1 then psdiuretics_otherdiuretics=1;
+	if otherdiuretics=1 then psdiuretics_otherdiuretics=0;
+run;
+proc phreg data=cms.study_cohort_2017_cvd_new;;
+	class psdiuretics_acei (ref='1')/ param=ref ref=first; 
+	model survival_time*pd(0) = psdiuretics_acei / eventcode=1 risklimits;
+run;
+proc phreg data=cms.study_cohort_2017_cvd_new;;
+	class psdiuretics_arb (ref='1')/ param=ref ref=first; 
+	model survival_time*pd(0) = psdiuretics_arb / eventcode=1 risklimits;
+run;
+proc phreg data=cms.study_cohort_2017_cvd_new;;
+	class psdiuretics_av (ref='1')/ param=ref ref=first; 
+	model survival_time*pd(0) = psdiuretics_av / eventcode=1 risklimits;
+run;
+proc phreg data=cms.study_cohort_2017_cvd_new;;
+	class psdiuretics_arrhy (ref='1')/ param=ref ref=first; 
+	model survival_time*pd(0) = psdiuretics_arrhy / eventcode=1 risklimits;
+run;
+proc phreg data=cms.study_cohort_2017_cvd_new;;
+	class psdiuretics_platelets (ref='1')/ param=ref ref=first; 
+	model survival_time*pd(0) = psdiuretics_platelets / eventcode=1 risklimits;
+run;
+proc phreg data=cms.study_cohort_2017_cvd_new;;
+	class psdiuretics_bb (ref='1')/ param=ref ref=first; 
+	model survival_time*pd(0) = psdiuretics_bb / eventcode=1 risklimits;
+run;
+proc phreg data=cms.study_cohort_2017_cvd_new;;
+	class psdiuretics_ccb (ref='1')/ param=ref ref=first; 
+	model survival_time*pd(0) = psdiuretics_ccb / eventcode=1 risklimits;
+run;
+proc phreg data=cms.study_cohort_2017_cvd_new;;
+	class psdiuretics_otherdiuretics (ref='1') / param=ref ref=first; 
+	model survival_time*pd(0) = psdiuretics_otherdiuretics / eventcode=1 risklimits;
+run;
+
+
+
+
+
+
+proc phreg data=cms.study_cohort_2017_cvd_new;;
+	class psdiuretics_acei (ref='1')/ param=ref ref=first; 
+	model survival_time*pd(0) = psdiuretics_acei age / eventcode=1 risklimits;
+run;
+proc phreg data=cms.study_cohort_2017_cvd_new;;
+	class psdiuretics_arb (ref='1')/ param=ref ref=first; 
+	model survival_time*pd(0) = psdiuretics_arb age / eventcode=1 risklimits;
+run;
+proc phreg data=cms.study_cohort_2017_cvd_new;;
+	class psdiuretics_av (ref='1')/ param=ref ref=first; 
+	model survival_time*pd(0) = psdiuretics_av age / eventcode=1 risklimits;
+run;
+proc phreg data=cms.study_cohort_2017_cvd_new;;
+	class psdiuretics_arrhy (ref='1')/ param=ref ref=first; 
+	model survival_time*pd(0) = psdiuretics_arrhy age / eventcode=1 risklimits;
+run;
+proc phreg data=cms.study_cohort_2017_cvd_new;;
+	class psdiuretics_platelets (ref='1')/ param=ref ref=first; 
+	model survival_time*pd(0) = psdiuretics_platelets age / eventcode=1 risklimits;
+run;
+proc phreg data=cms.study_cohort_2017_cvd_new;;
+	class psdiuretics_bb (ref='1')/ param=ref ref=first; 
+	model survival_time*pd(0) = psdiuretics_bb age/ eventcode=1 risklimits;
+run;
+proc phreg data=cms.study_cohort_2017_cvd_new;;
+	class psdiuretics_ccb (ref='1')/ param=ref ref=first; 
+	model survival_time*pd(0) = psdiuretics_ccb age/ eventcode=1 risklimits;
+run;
+proc phreg data=cms.study_cohort_2017_cvd_new;;
+	class psdiuretics_otherdiuretics (ref='1') / param=ref ref=first; 
+	model survival_time*pd(0) = psdiuretics_otherdiuretics age/ eventcode=1 risklimits;
+run;
+
 
