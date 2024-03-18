@@ -145,12 +145,77 @@ proc sql;
     where bene_id not in (select bene_id from toexclude_nodup);
 Quit;
 
-/*get first cvd drug claims of each user and get day0*/
+/*get first cvd drug claims of each user (2016 to 2019) and get day0*/
+data cms.cvddrug16to19;
+  set cms.cvddrug15to19v2;
+  if year(srvc_dt) ne '2015';
+run;
+
+proc sql;
+    create table cms.cvd16to19day0 as
+    select a.*
+    from cms.cvddrug16to19 a
+    inner join
+        (select bene_id, min(srvc_dt) as index_date
+         from cms.cvddrug16to19
+         group by bene_id) b
+    on a.bene_id = b.bene_id and a.srvc_dt = b.index_date;
+quit;
+
+proc sort data=cms.cvd16to19day0; 
+    by bene_id;
+run;
+data cms.cvd16to19day0v2; 
+    set cms.cvd16to19day0; 
+    by bene_id;
+    if first.bene_id; 
+run;
+
+proc sql;
+   create table cvd15to19birthday as
+   select distinct bene_id, bene_birth_dt
+   from cms.cvdmbsf15to19;
+quit;
+
+proc sql;
+   create table cms.cvd16to19day0v3 as
+   select a.*
+   from cms.cvd16to19day0v2 as a
+   inner join cvd15to19birthday as b on a.bene_id = b.bene_id
+   where intck('year', b.bene_birth_dt, a.srvc_dt) >= 66;
+quit;
 
 
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+data _null_;
+    set cms.cvd16to19day0v2   nobs=nobs_var;
+    call symput('obs_count', nobs_var);
+    stop;
+run;
+
+proc sql noprint;
+    select count(distinct bene_id) into :unique_patients
+    from cms.cvd16to19day0v2;
+quit;
+
+%put Number of Observations: &obs_count;
+%put Number of Unique Patients (bene_id): &unique_patients;
 
 
 
