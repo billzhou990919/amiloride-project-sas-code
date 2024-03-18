@@ -1,3 +1,11 @@
 data cms.study_cohort_2017_cvd_new;
   set cms.study_cohort_2017_cvd_new;
-  if upcase(gnn) in:
+  amiloride = 0;
+  eplerenone = 0;
+  spironolactone = 0;
+  triamterene = 0;
+  if upcase(gnn) in: ('AMILORIDE') then amiloride = 1;
+  if upcase(gnn) in: ('EPLERENONE') then eplerenone = 1;
+  if upcase(gnn) in: (‘SPIRONOLACTONE’) then spironolactone = 1;
+  if upcase(gnn) in: (‘TRIAMTERENE’) then triamterene = 1; 
+run;
