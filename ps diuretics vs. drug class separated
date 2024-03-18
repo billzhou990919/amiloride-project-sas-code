@@ -1,0 +1,3 @@
+data cms.study_cohort_2017_cvd_new;
+  set cms.study_cohort_2017_cvd_new;
+  if upcase(gnn) in:
