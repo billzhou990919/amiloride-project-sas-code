@@ -51,3 +51,20 @@ proc freq data=cms.study_cohort_2017_cvd_new;
 run;
 
 
+proc means data=cms.study_cohort_2017_cvd_new mean;
+    var age;
+    where amiloride = 1;
+run;
+proc means data=cms.study_cohort_2017_cvd_new mean;
+    var age;
+    where eplerenone = 1;
+run;
+proc means data=cms.study_cohort_2017_cvd_new mean;
+    var age;
+    where spironolactone = 1;
+run;
+proc means data=cms.study_cohort_2017_cvd_new mean;
+    var age;
+    where triamterene = 1;
+run;
+
