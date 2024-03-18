@@ -1,3 +1,4 @@
+/*new user 2017*/
 data cms.study_cohort_2017_cvd_new;
   set cms.study_cohort_2017_cvd_new;
   amiloride = 0;
@@ -95,6 +96,157 @@ data rates;
     set spironolactone_group (in=a) triamterene_group (in=b);
     if a then Group = "spironolactone";
     else if b then Group = "triamterene";
+    Incidence_Rate = events / person_time;
+run;
+
+proc print data=rates;
+    title "Incidence Rates for bb vs otherdiuretics";
+run;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*all user 2017*/
+data cms.study_cohort_2017_cvd;
+  set cms.study_cohort_2017_cvd;
+  amiloride = 0;
+  eplerenone = 0;
+  spironolactone = 0;
+  triamterene = 0;
+  if upcase(gnn) in: ('AMILORIDE') then amiloride = 1;
+  if upcase(gnn) in: ('EPLERENONE') then eplerenone = 1;
+  if upcase(gnn) in: (‘SPIRONOLACTONE’) then spironolactone = 1;
+  if upcase(gnn) in: (‘TRIAMTERENE’) then triamterene = 1; 
+run;
+
+proc freq data=cms.study_cohort_2017_cvd;
+	table psdiuretics * pd;
+run;
+proc freq data=cms.study_cohort_2017_cvd;
+	table amiloride * pd;
+run;
+proc freq data=cms.study_cohort_2017_cvd;
+	table eplerenone * pd;
+run;
+proc freq data=cms.study_cohort_2017_cvd;
+	table spironolactone * pd;
+run;
+proc freq data=cms.study_cohort_2017_cvd;
+	table triamterene * pd;
+run;
+proc freq data=cms.study_cohort_2017_cvd;
+	table acei * pd;
+run;
+proc freq data=cms.study_cohort_2017_cvd;
+	table arb * pd;
+run;
+proc freq data=cms.study_cohort_2017_cvd;
+	table av * pd;
+run;
+proc freq data=cms.study_cohort_2017_cvd;
+	table antiarrhythimcs * pd;
+run;
+proc freq data=cms.study_cohort_2017_cvd;
+	table antiplatelets * pd;
+run;
+proc freq data=cms.study_cohort_2017_cvd;
+	table bb * pd;
+run;
+proc freq data=cms.study_cohort_2017_cvd;
+	table ccb * pd;
+run;
+proc freq data=cms.study_cohort_2017_cvd;
+	table otherdiuretics * pd;
+run;
+
+
+proc means data=cms.study_cohort_2017_cvd mean;
+    var age;
+    where amiloride = 1;
+run;
+proc means data=cms.study_cohort_2017_cvd mean;
+    var age;
+    where eplerenone = 1;
+run;
+proc means data=cms.study_cohort_2017_cvd mean;
+    var age;
+    where spironolactone = 1;
+run;
+proc means data=cms.study_cohort_2017_cvd mean;
+    var age;
+    where triamterene = 1;
+run;
+
+
+
+data filtered;
+    set cms.study_cohort_2017_cvd;
+    if spironolactone = 1 or triamterene = 1;
+run;
+/* Calculate person-time and event counts for bb group */
+proc sql;
+    create table spironolactone_group as
+    select sum(pd) as events, sum(survival_time) as person_time
+    from filtered
+    where spironolactone = 1;
+quit;
+
+/* Calculate person-time and event counts for bb group */
+proc sql;
+    create table triamterene_group as
+    select sum(pd) as events, sum(survival_time) as person_time
+    from filtered
+    where triamterene = 1;
+quit;
+
+/* Calculate incidence rates */
+data rates;
+    set spironolactone_group (in=a) triamterene_group (in=b);
+    if a then Group = "spironolactone";
+    else if b then Group = "triamterene";
+    Incidence_Rate = events / person_time;
+run;
+
+proc print data=rates;
+    title "Incidence Rates for bb vs otherdiuretics";
+run;
+
+data filtered;
+    set cms.study_cohort_2017_cvd;
+    if amiloride = 1 or eplerenone = 1;
+run;
+/* Calculate person-time and event counts for bb group */
+proc sql;
+    create table amiloride_group as
+    select sum(pd) as events, sum(survival_time) as person_time
+    from filtered
+    where amiloride = 1;
+quit;
+
+/* Calculate person-time and event counts for bb group */
+proc sql;
+    create table eplerenone_group as
+    select sum(pd) as events, sum(survival_time) as person_time
+    from filtered
+    where eplerenone = 1;
+quit;
+
+/* Calculate incidence rates */
+data rates;
+    set amiloride_group (in=a) eplerenone_group (in=b);
+    if a then Group = "amiloride";
+    else if b then Group = "eplerenone";
     Incidence_Rate = events / person_time;
 run;
 
