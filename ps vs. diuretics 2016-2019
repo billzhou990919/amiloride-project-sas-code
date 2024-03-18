@@ -53,3 +53,105 @@ data cms.allcvddrug2019;
 'LERCANIDIPINE', 'CILNIDIPINE', 'BENIDIPINE', 'CLEVIDIPINE', 'MIBEFRADIL', 'FENDILINE', 'BEPRIDIL', 'LIDOFLAZINE', 'PERHEXILINE','BENDROFLUMETHIAZIDE', 'HYDROFLUMETHIAZIDE', 'HYDROCHLOROTHIAZIDE', 'CHLOROTHIAZIDE', 'POLYTHIAZIDE', 'TRICHLORMETHIAZIDE', 'CYCLOPENTHIAZIDE', 'METHYCLOTHIAZIDE', 'CYCLOTHIAZIDE', 
 'MEBUTIZIDE', 'QUINETHAZONE', 'CLOPAMIDE');
 run;
+
+/*getting mbsf files*/
+proc sql;
+    create table cms.cvdmbsf15 as
+    select bene_id,sample_group,bene_birth_dt from mbsf15.mbsf_abcd_summary_2015
+    where bene_id in (select bene_id from cms.allcvddrug2015);
+Quit;
+proc sql;
+    create table cms.cvdmbsf16 as
+    select bene_id,sample_group,bene_birth_dt from mbsf16.mbsf_abcd_summary_2016
+    where bene_id in (select bene_id from cms.allcvddrug2016);
+Quit;
+proc sql;
+    create table cms.cvdmbsf17 as
+    select bene_id,sample_group,bene_birth_dt from mbsf17.mbsf_abcd_summary_2017
+    where bene_id in (select bene_id from cms.allcvddrug2017);
+Quit;
+proc sql;
+    create table cms.cvdmbsf18 as
+    select bene_id,sample_group,bene_birth_dt from mbsf18.mbsf_abcd_summary_2018
+    where bene_id in (select bene_id from cms.allcvddrug2018);
+Quit;
+proc sql;
+    create table cms.cvdmbsf19 as
+    select bene_id,sample_group,bene_birth_dt from mbsf19.mbsf_abcd_summary_2019
+    where bene_id in (select bene_id from cms.allcvddrug2019);
+Quit;
+
+
+proc sort data=cms.cvdmbsf15 out=cms.cvdmbsf15v2 nodupkey;
+    by bene_id;
+run;
+proc sort data=cms.cvdmbsf16 out=cms.cvdmbsf16v2 nodupkey;
+    by bene_id;
+run;
+proc sort data=cms.cvdmbsf17 out=cms.cvdmbsf17v2 nodupkey;
+    by bene_id;
+run;
+proc sort data=cms.cvdmbsf18 out=cms.cvdmbsf18v2 nodupkey;
+    by bene_id;
+run;
+proc sort data=cms.cvdmbsf19 out=cms.cvdmbsf19v2 nodupkey;
+    by bene_id;
+run;
+
+data cms.cvdmbsf15v2;
+  set cms.cvdmbsf15v2;
+  year = 2015;
+run;
+data cms.cvdmbsf16v2;
+  set cms.cvdmbsf16v2;
+  year = 2016;
+run;
+data cms.cvdmbsf17v2;
+  set cms.cvdmbsf17v2;
+  year = 2017;
+run;
+data cms.cvdmbsf18v2;
+  set cms.cvdmbsf18v2;
+  year = 2018;
+run;
+data cms.cvdmbsf19v2;
+  set cms.cvdmbsf19v2;
+  year = 2019;
+run;
+
+data cms.cvdmbsf15to19;
+  set cms.cvdmbsf15v2 cms.cvdmbsf16v2 cms.cvdmbsf17v2 cms.cvdmbsf18v2 cms.cvdmbsf19v2;
+run;
+
+data cms.cvddrug15to19;
+  set cms.allcvddrug2015 cms.allcvddrug2016 cms.allcvddrug2017 cms.allcvddrug2018 cms.allcvddrug2019;
+run;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
