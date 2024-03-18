@@ -72,28 +72,32 @@ run;
 
 data filtered;
     set cms.study_cohort_2017_cvd_new;
-    if amiloride = 1 or eplerenone = 1;
+    if spironolactone = 1 or triamterene = 1;
 run;
 /* Calculate person-time and event counts for bb group */
 proc sql;
-    create table amiloride_group as
+    create table spironolactone_group as
     select sum(pd) as events, sum(survival_time) as person_time
     from filtered
-    where amiloride = 1;
+    where spironolactone = 1;
 quit;
 
 /* Calculate person-time and event counts for bb group */
 proc sql;
-    create table eplerenone_group as
+    create table triamterene_group as
     select sum(pd) as events, sum(survival_time) as person_time
     from filtered
-    where eplerenone = 1;
+    where triamterene = 1;
 quit;
 
 /* Calculate incidence rates */
 data rates;
-    set amiloride_group (in=a) eplerenone_group (in=b);
-    if a then Group = "amiloride";
-    else if b then Group = "eplerenone";
+    set spironolactone_group (in=a) triamterene_group (in=b);
+    if a then Group = "spironolactone";
+    else if b then Group = "triamterene";
     Incidence_Rate = events / person_time;
+run;
+
+proc print data=rates;
+    title "Incidence Rates for bb vs otherdiuretics";
 run;
