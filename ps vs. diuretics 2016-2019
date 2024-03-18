@@ -127,10 +127,40 @@ data cms.cvddrug15to19;
   set cms.allcvddrug2015 cms.allcvddrug2016 cms.allcvddrug2017 cms.allcvddrug2018 cms.allcvddrug2019;
 run;
 
+/*exclude sample group not in 20% */
+data toexclude;
+  set cms.cvdmbsf15to19;
+  if sample_group = ' ';
+run;
+proc sql;
+   create table toexclude_nodup as
+   select distinct bene_id
+   from toexclude
+   group by bene_id;
+quit;
 
+proc sql;
+    create table cms.cvddrug15to19v2 as
+    select * from cms.cvddrug15to19
+    where bene_id not in (select bene_id from toexclude_nodup);
+Quit;
 
+data cms.cvddrug15to19v2;
+    merge cms.cvddrug15to19(in=a) cms.cvdmbsf15to19(in=b);
+    by bene_id;
+    if a and b;  
+Run; 
 
+data cms.cvddrug15to19v3;
+    set cms.cvddrug15to19v2;
+    where sample_group ne ' ';
+run;
 
+data cms.alldrug2017v3;
+    set cms.alldrug2017v2;
+    age = int((2017 - year(birth_date)));
+    if age >= 66;
+run;
 
 
 
