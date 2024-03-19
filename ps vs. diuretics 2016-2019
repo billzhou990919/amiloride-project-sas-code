@@ -280,16 +280,194 @@ where cont_12mon = 1;
 run;
 
 
+data cms.cvd16to19day0v4;
+    set raw_cohort3 (keep = bene_id srvc_dt days_suply_num gnn);
+run;
+
+/*delete all rows with pd dx 12 months prior to index_date */
+proc sql;
+   create table work.merge as
+   select a.*, b.clm_from_dt
+   from cms.cvd16to19day0v4 a
+   left join cms.all_parkinson b
+   on a.bene_id = b.bene_id;
+quit;
+
+/* Identify individuals to exclude */
+proc sql;
+   create table work.to_exclude as
+   select distinct bene_id
+   from work.merge
+   where intck('month', clm_from_dt, srvc_dt) between -12 and 0;
+quit;
+
+/* Exclude the identified individuals from exclude65 */
+proc sql;
+   create table cms.nopriorpdcvd as
+   select *
+   from cms.cvd16to19day0v4
+   where bene_id not in (select bene_id from work.to_exclude);
+quit;
+
+
+/*getting pd indicator and dx time*/
+proc sort data=cms.nopriorpdcvd; by bene_id; run;
+
+/* Merge the summary dataset with all_bleeding based on enrolid */
+data cms.merged_dataset;
+    merge cms.nopriorpdcvd(in=a) cms.all_parkinson(in=b);
+    by bene_id;
+    if a and b; /* This keeps only the matched records */
+run;
+
+/* Filter the rows based on the date conditions and create a new dataset */
+data cms.adverse_event_cvd;
+    set cms.merged_dataset;
+    if clm_from_dt >= index_date;
+Run;
+
+Proc datasets library=cms nolist;
+Delete merged_dataset;
+Run;
+
+/*only keeping the first bleeding event*/
+/* Sort the dataset by enrolid and admdate */
+proc sort data=cms.adverse_event_cvd;
+    by bene_id clm_from_dt;
+run;
+
+/* Keep only the first occurrence of each enrolid (i.e., the row with the earliest admdate) */
+data cms.adverse_event_cvd; 
+    set cms.adverse_event_cvd;
+    by bene_id;
+    if first.bene_id;
+run;
+
+proc sql;
+    create table cms.study_cohort_16to19_cvd as
+    select a.*, b.clm_from_dt
+    from cms.nopriorpdcvd as a
+    left join cms.adverse_event_cvd as b
+    on a.bene_id = b.bene_id;
+quit;
+
+data cms.study_cohort_16to19_cvd;
+set cms.study_cohort_16to19_cvd;
+pd = 0;
+if clm_from_dt ne . then pd = 1;
+run;
+
+data cms.study_cohort_16to19_cvd; 
+    set cms.study_cohort_16to19_cvd;
+    study_end = 21914;
+    censor_date = min(of clm_from_dt study_end);
+    format censor_date index_date clm_from_dt MMDDYY10.; 
+run;
+
+/*calculate survival time*/
+data cms.study_cohort_16to19_cvd; 
+    set cms.study_cohort_16to19_cvd;
+    survival_time = censor_date - srvc_dt;
+run;
+
+proc sql;
+    create table exclude_individuals as
+    select distinct a.bene_id
+    from cms.study_cohort_16to19_cvd as a, cms.allcvddrug2015 as b
+    where a.bene_id = b.bene_id
+    and b.srvc_dt between (a.srvc_dt - 365) and a.srvc_dt;
+Quit;
+proc sql;
+    create table cms.study_cohort_16to19_cvd_new as
+    select *
+    from cms.study_cohort_16to19_cvd
+    where bene_id not in (select bene_id from exclude_individuals);
+Quit;
 
 
 
+data cms.study_cohort_16to19_cvd_new;
+  set cms.study_cohort_16to19_cvd_new;
+  amiloride = 0;
+  eplerenone = 0;
+  spironolactone = 0;
+  triamterene = 0;
+  psdiuretics = 0;
+  acei = 0;
+  arb = 0;
+  av = 0;
+  antiarrhythimcs = 0;
+  antiplatelets = 0;
+  bb = 0;
+  ccb = 0;
+  otherdiuretics = 0;
+  if upcase(gnn) in: ('AMILORIDE') then amiloride = 1;
+  if upcase(gnn) in: ('EPLERENONE') then eplerenone = 1;
+  if upcase(gnn) in: (‘SPIRONOLACTONE’) then spironolactone = 1;
+  if upcase(gnn) in: (‘TRIAMTERENE’) then triamterene = 1; 
+  if upcase(gnn) in: ('AMILORIDE', 'EPLERENONE', 'SPIRONOLACTONE', 'TRIAMTERENE') then psdiuretics = 1;
+  if upcase(gnn) in: ('BENAZEPRIL', 'CAPTOPRIL', 'CILAZAPRIL', 'ENALAPRIL', 'ENALAPRILAT', 'FOSINOPRIL', 'LISINOPRIL', 'MOEXIPRIL', 'PERINDOPRIL', 'QUINAPRIL', 'RAMIPRIL', 
+'TRANDOLAPRIL', 'SPIRAPRIL', 'TEMOCAPRIL', 'ZOFENOPRIL', 'IMIDAPRIL', 'DELAPRIL') then acei = 1;
+  if upcase(gnn) in: ('VALSARTAN', 'OLMESARTAN', 'EPROSARTAN', 'TELMISARTAN', 'IRBESARTAN', 'TASOSARTAN', 'AZILSARTAN', 'FIMASARTAN', 'CANDESARTAN', 'LOSARTAN') then arb = 1;
+  if upcase(gnn) in: ('NITROGLYCERIN', 'GLYCERYL TRINITRATE', 'ISOSORBIDE DINITRATE', 'ISOSORBIDE MONONITRATE', 'ERYTHRITYL TETRANITRATE', 'PENTAERYTHRITOL TETRANITRATE', 
+'NICORANDIL', 'MOLSIDOMINE', 'TRAPIDIL', 'IMOLAMINE', 'HEXOBENDINE') then av = 1;
+  if upcase(gnn) in: ('QUINIDINE', 'PROCAINAMIDE', 'DISOPYRAMIDE', 'SPARTEINE', 'AJMALINE', 'PRAJMALINE', 'LORAJMINE', 'HYDROQUINIDINE', 'LIDOCAINE', 'MEXILETINE', 'TOCAINIDE',
+'APRINDINE', 'PROPAFENONE', 'FLECAINIDE', 'LORCAINIDE', 'ENCAINIDE', 'ETHACIZINE', 'AMIODARONE', 'BRETYLIUM', 'BUNAFTINE', 'DOFETILIDE', 'IBUTILIDE', 'TEDISAMIL', 'DRONEDARONE', 
+'MORACIZINE', 'CIBENZOLINE', 'VERNAKALANT') then antiarrhythimcs = 1;
+  if upcase(gnn) in: ('DITAZOLE', 'CLORICROMEN', 'PICOTAMIDE', 'CLOPIDOGREL', 'TICLOPIDINE', 'DIPYRIDAMOLE', 'CARBASALATE CALCIUM', 'EPOPROSTENOL', 'INDOBUFEN', 'ILOPROST', 
+'ABCIXIMAB', 'ALOXIPRIN', 'EPTIFIBATIDE', 'TIROFIBAN', 'TRIFLUSAL', 'BERAPROST', 'TREPROSTINIL', 'PRASUGREL', 'CILOSTAZOL', 'TICAGRELOR', 'CANGRELOR', 'VORAPAXAR', 'SELEXIPAG') then antiplatelets = 1;
+  if upcase(gnn) in: ('ALPRENOLOL', 'OXPRENOLOL', 'PINDOLOL', 'PROPRANOLOL', 'TIMOLOL', 'SOTALOL', 'NADOLOL', 'MEPINDOLOL', 'CARTEOLOL', 'TERTATOLOL', 'BOPINDOLOL', 'BUPRANOLOL', 
+'PENBUTOLOL', 'CLORANOLOL', 'PRACTOLOL', 'METOPROLOL', 'ATENOLOL', 'ACEBUTOLOL', 'BETAXOLOL', 'BEVANTOLOL', 'BISOPROLOL', 'CELIPROLOL', 'ESMOLOL', 'EPANOLOL', 'S-ATENOLOL', 
+'NEBIVOLOL', 'TALINOLOL', 'LANDIOLOL', 'LABETALOL', 'CARVEDILOL') then bb = 1;
+  if upcase(gnn) in: ('AMLODIPINE', 'FELODIPINE', 'ISRADIPINE', 'NICARDIPINE', 'NIFEDIPINE', 'NIMODIPINE', 'NISOLDIPINE', 'NITRENDIPINE', 'LACIDIPINE', 'NILVADIPINE', 'MANIDIPINE',
+'BARNIDIPINE', 'LERCANIDIPINE', 'CILNIDIPINE', 'BENIDIPINE', 'CLEVIDIPINE', 'MIBEFRADIL', 'FENDILINE', 'BEPRIDIL', 'LIDOFLAZINE', 'PERHEXILINE') then ccb = 1;
+  if upcase(gnn) in: ('BENDROFLUMETHIAZIDE', 'HYDROFLUMETHIAZIDE', 'HYDROCHLOROTHIAZIDE', 'CHLOROTHIAZIDE', 'POLYTHIAZIDE', 'TRICHLORMETHIAZIDE', 'CYCLOPENTHIAZIDE',
+'METHYCLOTHIAZIDE', 'CYCLOTHIAZIDE', 'MEBUTIZIDE', 'QUINETHAZONE', 'CLOPAMIDE', 'CHLORTALIDONE', 'MEFRUSIDE', 'CLOFENAMIDE', 'METOLAZONE', 'XIPAMIDE', 'INDAPAMIDE', 
+'CLOREXOLONE', 'FENQUIZONE', 'MERSALYL', 'THEOBROMINE', 'CICLETANINE', 'FUROSEMIDE', 'BUMETANIDE', 'PIRETANIDE', 'TORASEMIDE', 'ETACRYNIC ACID', 'TIENILIC ACID', 
+'MUZOLIMINE', 'ETOZOLIN', 'POTASSIUM CANRENOATE', 'CANRENONE', 'TOLVAPTAN', 'CONIVAPTAN') then otherdiuretics = 1;
+run;
 
 
 
-
-
-
-
+proc freq data=cms.study_cohort_16to19_cvd_new;
+	table psdiuretics * pd;
+run;
+proc freq data=cms.study_cohort_16to19_cvd_new;
+	table amiloride * pd;
+run;
+proc freq data=cms.study_cohort_16to19_cvd_new;
+	table eplerenone * pd;
+run;
+proc freq data=cms.study_cohort_16to19_cvd_new;
+	table spironolactone * pd;
+run;
+proc freq data=cms.study_cohort_16to19_cvd_new;
+	table triamterene * pd;
+run;
+proc freq data=cms.study_cohort_16to19_cvd_new;
+	table acei * pd;
+run;
+proc freq data=cms.study_cohort_16to19_cvd_new;
+	table arb * pd;
+run;
+proc freq data=cms.study_cohort_16to19_cvd_new;
+	table av * pd;
+run;
+proc freq data=cms.study_cohort_16to19_cvd_new;
+	table antiarrhythimcs * pd;
+run;
+proc freq data=cms.study_cohort_16to19_cvd_new;
+	table antiplatelets * pd;
+run;
+proc freq data=cms.study_cohort_16to19_cvd_new;
+	table bb * pd;
+run;
+proc freq data=cms.study_cohort_16to19_cvd_new;
+	table ccb * pd;
+run;
+proc freq data=cms.study_cohort_16to19_cvd_new;
+	table otherdiuretics * pd;
+run;
 
 
 
