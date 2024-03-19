@@ -1,0 +1,435 @@
+data cms.allcvddrug2017;
+  set cms.alldrug2017v2;
+  if upcase(gnn) in: ("METFORMIN", "ALOGLIPTIN", "LINAGLIPTIN", "SAXAGLIPTIN", "SITAGLIPTIN", "DULAGLUTIDE", 
+  "EXENATIDE", "LIRAGLUTIDE", "LIXISENATIDE", "SEMAGLUTIDE", "TIRZEPATIDE", "BEXAGLIFLOZIN", "CANAGLIFLOZIN", 
+  "DAPAGLIFLOZIN", 
+  "EMPAGLIFLOZIN", "GLIMEPIRIDE", "GLIPIZIDE", "GLYBURIDE", "ROSIGLITAZONE", "PIOGLITAZONE"
+``` &#8203;``【oaicite:0】``&#8203;
+);
+run;
+
+proc sql;
+    create table cms.cvdday0 as
+    select a.*
+    from cms.allcvddrug2017 a
+    inner join
+        (select bene_id, min(srvc_dt) as index_date
+         from cms.allcvddrug2017
+         group by bene_id) b
+    on a.bene_id = b.bene_id and a.srvc_dt = b.index_date;
+quit;
+
+proc sort data=cms.cvdday0; 
+    by bene_id;
+run;
+data cms.cvdday0v2; 
+    set cms.cvdday0; 
+    by bene_id;
+    if first.bene_id; 
+run;
+
+
+data cms.cvdday0v3;
+  set cms.cvdday0v2;
+  psdiuretics = 0;
+  acei = 0;
+  arb = 0;
+  av = 0;
+  antiarrhythimcs = 0;
+  antiplatelets = 0;
+  bb = 0;
+  ccb = 0;
+  otherdiuretics = 0;
+  if upcase(gnn) in: ('AMILORIDE', 'EPLERENONE', 'SPIRONOLACTONE', 'TRIAMTERENE') then psdiuretics = 1;
+  if upcase(gnn) in: ('BENAZEPRIL', 'CAPTOPRIL', 'CILAZAPRIL', 'ENALAPRIL', 'ENALAPRILAT', 'FOSINOPRIL', 'LISINOPRIL', 'MOEXIPRIL', 'PERINDOPRIL', 'QUINAPRIL', 'RAMIPRIL', 
+'TRANDOLAPRIL', 'SPIRAPRIL', 'TEMOCAPRIL', 'ZOFENOPRIL', 'IMIDAPRIL', 'DELAPRIL') then acei = 1;
+  if upcase(gnn) in: ('VALSARTAN', 'OLMESARTAN', 'EPROSARTAN', 'TELMISARTAN', 'IRBESARTAN', 'TASOSARTAN', 'AZILSARTAN', 'FIMASARTAN', 'CANDESARTAN', 'LOSARTAN') then arb = 1;
+  if upcase(gnn) in: ('NITROGLYCERIN', 'GLYCERYL TRINITRATE', 'ISOSORBIDE DINITRATE', 'ISOSORBIDE MONONITRATE', 'ERYTHRITYL TETRANITRATE', 'PENTAERYTHRITOL TETRANITRATE', 
+'NICORANDIL', 'MOLSIDOMINE', 'TRAPIDIL', 'IMOLAMINE', 'HEXOBENDINE') then av = 1;
+  if upcase(gnn) in: ('QUINIDINE', 'PROCAINAMIDE', 'DISOPYRAMIDE', 'SPARTEINE', 'AJMALINE', 'PRAJMALINE', 'LORAJMINE', 'HYDROQUINIDINE', 'LIDOCAINE', 'MEXILETINE', 'TOCAINIDE',
+'APRINDINE', 'PROPAFENONE', 'FLECAINIDE', 'LORCAINIDE', 'ENCAINIDE', 'ETHACIZINE', 'AMIODARONE', 'BRETYLIUM', 'BUNAFTINE', 'DOFETILIDE', 'IBUTILIDE', 'TEDISAMIL', 'DRONEDARONE', 
+'MORACIZINE', 'CIBENZOLINE', 'VERNAKALANT') then antiarrhythimcs = 1;
+  if upcase(gnn) in: ('DITAZOLE', 'CLORICROMEN', 'PICOTAMIDE', 'CLOPIDOGREL', 'TICLOPIDINE', 'DIPYRIDAMOLE', 'CARBASALATE CALCIUM', 'EPOPROSTENOL', 'INDOBUFEN', 'ILOPROST', 
+'ABCIXIMAB', 'ALOXIPRIN', 'EPTIFIBATIDE', 'TIROFIBAN', 'TRIFLUSAL', 'BERAPROST', 'TREPROSTINIL', 'PRASUGREL', 'CILOSTAZOL', 'TICAGRELOR', 'CANGRELOR', 'VORAPAXAR', 'SELEXIPAG') then antiplatelets = 1;
+  if upcase(gnn) in: ('ALPRENOLOL', 'OXPRENOLOL', 'PINDOLOL', 'PROPRANOLOL', 'TIMOLOL', 'SOTALOL', 'NADOLOL', 'MEPINDOLOL', 'CARTEOLOL', 'TERTATOLOL', 'BOPINDOLOL', 'BUPRANOLOL', 
+'PENBUTOLOL', 'CLORANOLOL', 'PRACTOLOL', 'METOPROLOL', 'ATENOLOL', 'ACEBUTOLOL', 'BETAXOLOL', 'BEVANTOLOL', 'BISOPROLOL', 'CELIPROLOL', 'ESMOLOL', 'EPANOLOL', 'S-ATENOLOL', 
+'NEBIVOLOL', 'TALINOLOL', 'LANDIOLOL', 'LABETALOL', 'CARVEDILOL') then bb = 1;
+  if upcase(gnn) in: ('AMLODIPINE', 'FELODIPINE', 'ISRADIPINE', 'NICARDIPINE', 'NIFEDIPINE', 'NIMODIPINE', 'NISOLDIPINE', 'NITRENDIPINE', 'LACIDIPINE', 'NILVADIPINE', 'MANIDIPINE',
+'BARNIDIPINE', 'LERCANIDIPINE', 'CILNIDIPINE', 'BENIDIPINE', 'CLEVIDIPINE', 'MIBEFRADIL', 'FENDILINE', 'BEPRIDIL', 'LIDOFLAZINE', 'PERHEXILINE') then ccb = 1;
+  if upcase(gnn) in: ('BENDROFLUMETHIAZIDE', 'HYDROFLUMETHIAZIDE', 'HYDROCHLOROTHIAZIDE', 'CHLOROTHIAZIDE', 'POLYTHIAZIDE', 'TRICHLORMETHIAZIDE', 'CYCLOPENTHIAZIDE',
+'METHYCLOTHIAZIDE', 'CYCLOTHIAZIDE', 'MEBUTIZIDE', 'QUINETHAZONE', 'CLOPAMIDE', 'CHLORTALIDONE', 'MEFRUSIDE', 'CLOFENAMIDE', 'METOLAZONE', 'XIPAMIDE', 'INDAPAMIDE', 
+'CLOREXOLONE', 'FENQUIZONE', 'MERSALYL', 'THEOBROMINE', 'CICLETANINE', 'FUROSEMIDE', 'BUMETANIDE', 'PIRETANIDE', 'TORASEMIDE', 'ETACRYNIC ACID', 'TIENILIC ACID', 
+'MUZOLIMINE', 'ETOZOLIN', 'POTASSIUM CANRENOATE', 'CANRENONE', 'TOLVAPTAN', 'CONIVAPTAN') then otherdiuretics = 1;
+run;
+
+data cms.cvdday0v4;
+    set cms.cvdday0v3;
+    age = int((2017 - year(birth_date)));
+    if age >= 66;
+run;
+
+data cms.cvdday0v5;
+    set cms.cvdday0v4;
+    where sample_group ne ' ';
+run;
+data cms.cvdday0v5;
+    set cms.cvdday0v5;
+    index_date = srvc_dt;
+run;
+
+proc sql;
+    create table cms.mbsf17cvd as
+    select * from mbsf17.mbsf_abcd_summary_2017
+    where bene_id in (select bene_id from cms.cvdday0v5);
+Quit;
+proc sql;
+    create table cms.mbsf16cvd as
+    select * from mbsf16.mbsf_abcd_summary_2016
+    where bene_id in (select bene_id from cms.cvdday0v5);
+Quit;
+
+
+data cms.mbsfcvd;
+    set cms.mbsf16cvd cms.mbsf17cvd;
+    keep bene_id bene_enrollmt_ref_yr 
+         mdcr_entlmt_buyin_ind_01-mdcr_entlmt_buyin_ind_12 
+         hmo_ind_01-hmo_ind_12 
+         ptc_pbp_id_01-ptc_pbp_id_12 
+         ptd_cntrct_id_01-ptd_cntrct_id_12;
+run;
+
+
+**CONTINUOUS ENROLLMENT;
+%macro _5pbenesum( yr, indata);
+data benesum&yr (keep = bene_id mdcr_entlmt_buyin_ind_01-mdcr_entlmt_buyin_ind_12 hmo_ind_01-hmo_ind_12  HMOIND_&yr BUYIN_&yr);
+  set cms.&indata;
+  HMOIND_&yr = compress(hmo_ind_01||hmo_ind_02||hmo_ind_03||hmo_ind_04||hmo_ind_05||hmo_ind_06||hmo_ind_07||hmo_ind_08||hmo_ind_09||hmo_ind_10||hmo_ind_11||hmo_ind_12, " ");
+  BUYIN_&yr = compress(mdcr_entlmt_buyin_ind_01||mdcr_entlmt_buyin_ind_02||mdcr_entlmt_buyin_ind_03||mdcr_entlmt_buyin_ind_04||mdcr_entlmt_buyin_ind_05||mdcr_entlmt_buyin_ind_06||mdcr_entlmt_buyin_ind_07||mdcr_entlmt_buyin_ind_08||mdcr_entlmt_buyin_ind_09||mdcr_entlmt_buyin_ind_10||mdcr_entlmt_buyin_ind_11||mdcr_entlmt_buyin_ind_12, " ");
+run;
+
+proc sort data=benesum&yr; by bene_id; run;
+
+Proc sql;
+create table  benesum&yr._1 as
+select a.bene_id, a.HMOIND_&yr, a.BUYIN_&yr
+from benesum&yr as a, cms.cvdday0v5 as b
+where a.bene_id = b.bene_id;
+quit;
+
+Proc sort data = benesum&yr._1 nodupkey; by bene_id; run;
+
+%mend _5pbenesum;
+
+%_5pbenesum (2016, mbsf16cvd);	
+%_5pbenesum (2017, mbsf17cvd);			
+
+data benesum_2016_2017 ;				
+  merge benesum2016_1 benesum2017_1;
+  by bene_id;
+run;
+
+Proc sql;
+create table raw_cohort1 as
+select * 
+from  benesum_2016_2017 as a,  cms.cvdday0v5 as b
+where a.bene_id = b.bene_id;
+quit;
+
+data  raw_cohort2; 
+  set raw_cohort1;
+
+   HMOIND = HMOIND_2016||HMOIND_2017;
+   BUYIN = BUYIN_2016||BUYIN_2017;
+
+	PartAB365 = 0;						
+	HMO365=0;				
+
+    Start  = (year(index_date)-2016)*12 + month(index_date) -12;
+	end  = (year(index_date)-2016)*12 + month(index_date) - 1;
+
+	**365 days prior to index date;
+	do i = start to end until (substr (BUYIN,i,1) not in ("3","C"));
+			if substr(BUYIN,i,1)in ("3","C")then PartAB365 + 1; end;
+
+	do j=start to end until (substr(HMOIND,j,1)not in ("0"));
+		if substr(HMOIND,j,1) in ("0")then HMO365+1; end;	
+
+	if partAB365 = (end-start)+1 and hmo365 = (end-start) + 1 then cont_12mon = 1; else cont_12mon = 0;
+
+run;
+
+
+data raw_cohort3; 	
+set raw_cohort2;
+where cont_12mon = 1;
+run;
+
+data cms.cvdday0v6;
+    set raw_cohort3;
+run;
+
+/*delete all rows with pd dx 12 months prior to index_date */
+proc sql;
+   create table work.merge as
+   select a.*, b.clm_from_dt
+   from cms.cvdday0v6 a
+   left join cms.all_parkinson b
+   on a.bene_id = b.bene_id;
+quit;
+
+/* Identify individuals to exclude */
+proc sql;
+   create table work.to_exclude as
+   select distinct bene_id
+   from work.merge
+   where intck('month', clm_from_dt, index_date) between -12 and 0;
+quit;
+
+/* Exclude the identified individuals from exclude65 */
+proc sql;
+   create table cms.nopriorpdcvd2017 as
+   select *
+   from cms.cvdday0v6
+   where bene_id not in (select bene_id from work.to_exclude);
+quit;
+
+
+/*getting pd indicator and dx time*/
+proc sort data=cms.nopriorpdcvd2017; by bene_id; run;
+
+/* Merge the summary dataset with all_bleeding based on enrolid */
+data cms.merged_dataset;
+    merge cms.nopriorpdcvd2017(in=a) cms.all_parkinson(in=b);
+    by bene_id;
+    if a and b; /* This keeps only the matched records */
+run;
+
+/* Filter the rows based on the date conditions and create a new dataset */
+data cms.adverse_event_cvd;
+    set cms.merged_dataset;
+    if clm_from_dt >= index_date;
+Run;
+
+Proc datasets library=cms nolist;
+Delete merged_dataset;
+Run;
+
+/*only keeping the first bleeding event*/
+/* Sort the dataset by enrolid and admdate */
+proc sort data=cms.adverse_event_cvd;
+    by bene_id clm_from_dt;
+run;
+
+/* Keep only the first occurrence of each enrolid (i.e., the row with the earliest admdate) */
+data cms.adverse_event_cvd; 
+    set cms.adverse_event_cvd;
+    by bene_id;
+    if first.bene_id;
+run;
+
+proc sql;
+    create table cms.study_cohort_2017_cvd as
+    select a.*, b.clm_from_dt
+    from cms.nopriorpdcvd2017 as a
+    left join cms.adverse_event_cvd as b
+    on a.bene_id = b.bene_id;
+quit;
+
+data cms.study_cohort_2017_cvd;
+set cms.study_cohort_2017_cvd;
+pd = 0;
+if clm_from_dt ne . then pd = 1;
+run;
+
+data cms.study_cohort_2017_cvd; 
+    set cms.study_cohort_2017_cvd;
+    study_end = 21914;
+    censor_date = min(of clm_from_dt study_end);
+    format censor_date index_date clm_from_dt MMDDYY10.; 
+run;
+
+/*calculate survival time*/
+data cms.study_cohort_2017_cvd; 
+    set cms.study_cohort_2017_cvd;
+    survival_time = censor_date - index_date;
+run;
+
+proc freq data=cms.study_cohort_2017_cvd;
+	table acei * pd;
+run;
+proc freq data=cms.study_cohort_2017_cvd;
+	table arb * pd;
+run;
+proc freq data=cms.study_cohort_2017_cvd;
+	table av * pd;
+run;
+proc freq data=cms.study_cohort_2017_cvd;
+	table antiarrhythimcs * pd;
+run;
+proc freq data=cms.study_cohort_2017_cvd;
+	table antiplatelets * pd;
+run;
+proc freq data=cms.study_cohort_2017_cvd;
+	table bb * pd;
+run;
+proc freq data=cms.study_cohort_2017_cvd;
+	table ccb * pd;
+run;
+proc freq data=cms.study_cohort_2017_cvd;
+	table otherdiuretics * pd;
+run;
+
+data filtered;
+    set cms.study_cohort_2017_cvd;
+    if psdiuretics = 1 or arb = 1;
+run;
+
+/* Calculate person-time and event counts for psdiuretics group */
+proc sql;
+    create table psdiuretics_group as
+    select sum(pd) as events, sum(survival_time) as person_time
+    from filtered
+    where psdiuretics = 1;
+quit;
+
+/* Calculate person-time and event counts for psdiuretics group */
+proc sql;
+    create table arb_group as
+    select sum(pd) as events, sum(survival_time) as person_time
+    from filtered
+    where arb = 1;
+quit;
+
+/* Calculate incidence rates */
+data rates;
+    set psdiuretics_group (in=a) arb_group (in=b);
+    if a then Group = "psdiuretics";
+    else if b then Group = "arb";
+    Incidence_Rate = events / person_time;
+run;
+
+proc print data=rates;
+    title "Incidence Rates for psdiuretics vs arb";
+run;
+
+
+/*hazard ratio*/
+/*first get drug combination indicators*/
+data cms.study_cohort_2017_cvd;
+	set cms.study_cohort_2017_cvd;
+	psdiuretics_acei =.;
+	if psdiuretics=1 then psdiuretics_acei=1;
+	if acei=1 then psdiuretics_acei=0;
+run;
+data cms.study_cohort_2017_cvd;
+	set cms.study_cohort_2017_cvd;
+	psdiuretics_arb =.;
+	if psdiuretics=1 then psdiuretics_arb=1;
+	if arb=1 then psdiuretics_arb=0;
+run;
+data cms.study_cohort_2017_cvd;
+	set cms.study_cohort_2017_cvd;
+	psdiuretics_av =.;
+	if psdiuretics=1 then psdiuretics_av=1;
+	if av=1 then psdiuretics_av=0;
+run;
+data cms.study_cohort_2017_cvd;
+	set cms.study_cohort_2017_cvd;
+	psdiuretics_arrhy =.;
+	if psdiuretics=1 then psdiuretics_arrhy=1;
+	if antiarrhythimcs=1 then psdiuretics_arrhy=0;
+run;
+data cms.study_cohort_2017_cvd;
+	set cms.study_cohort_2017_cvd;
+	psdiuretics_platelets =.;
+	if psdiuretics=1 then psdiuretics_platelets=1;
+	if antiplatelets=1 then psdiuretics_platelets=0;
+run;
+data cms.study_cohort_2017_cvd;
+	set cms.study_cohort_2017_cvd;
+	psdiuretics_bb =.;
+	if psdiuretics=1 then psdiuretics_bb=1;
+	if bb=1 then psdiuretics_bb=0;
+run;
+data cms.study_cohort_2017_cvd;
+	set cms.study_cohort_2017_cvd;
+	psdiuretics_ccb =.;
+	if psdiuretics=1 then psdiuretics_ccb=1;
+	if ccb=1 then psdiuretics_ccb=0;
+run;
+data cms.study_cohort_2017_cvd;
+	set cms.study_cohort_2017_cvd;
+	psdiuretics_otherdiuretics =.;
+	if psdiuretics=1 then psdiuretics_otherdiuretics=1;
+	if otherdiuretics=1 then psdiuretics_otherdiuretics=0;
+run;
+proc phreg data=cms.study_cohort_2017_cvd;;
+	class psdiuretics_acei (ref='1')/ param=ref ref=first; 
+	model survival_time*pd(0) = psdiuretics_acei / eventcode=1 risklimits;
+run;
+proc phreg data=cms.study_cohort_2017_cvd;;
+	class psdiuretics_arb (ref='1')/ param=ref ref=first; 
+	model survival_time*pd(0) = psdiuretics_arb / eventcode=1 risklimits;
+run;
+proc phreg data=cms.study_cohort_2017_cvd;;
+	class psdiuretics_av (ref='1')/ param=ref ref=first; 
+	model survival_time*pd(0) = psdiuretics_av / eventcode=1 risklimits;
+run;
+proc phreg data=cms.study_cohort_2017_cvd;;
+	class psdiuretics_arrhy (ref='1')/ param=ref ref=first; 
+	model survival_time*pd(0) = psdiuretics_arrhy / eventcode=1 risklimits;
+run;
+proc phreg data=cms.study_cohort_2017_cvd;;
+	class psdiuretics_platelets (ref='1')/ param=ref ref=first; 
+	model survival_time*pd(0) = psdiuretics_platelets / eventcode=1 risklimits;
+run;
+proc phreg data=cms.study_cohort_2017_cvd;;
+	class psdiuretics_bb (ref='1')/ param=ref ref=first; 
+	model survival_time*pd(0) = psdiuretics_bb / eventcode=1 risklimits;
+run;
+proc phreg data=cms.study_cohort_2017_cvd;;
+	class psdiuretics_ccb (ref='1')/ param=ref ref=first; 
+	model survival_time*pd(0) = psdiuretics_ccb / eventcode=1 risklimits;
+run;
+proc phreg data=cms.study_cohort_2017_cvd;;
+	class psdiuretics_otherdiuretics (ref='1') / param=ref ref=first; 
+	model survival_time*pd(0) = psdiuretics_otherdiuretics / eventcode=1 risklimits;
+run;
+
+
+
+
+
+
+proc phreg data=cms.study_cohort_2017_cvd;;
+	class psdiuretics_acei (ref='1')/ param=ref ref=first; 
+	model survival_time*pd(0) = psdiuretics_acei age / eventcode=1 risklimits;
+run;
+proc phreg data=cms.study_cohort_2017_cvd;;
+	class psdiuretics_arb (ref='1')/ param=ref ref=first; 
+	model survival_time*pd(0) = psdiuretics_arb age / eventcode=1 risklimits;
+run;
+proc phreg data=cms.study_cohort_2017_cvd;;
+	class psdiuretics_av (ref='1')/ param=ref ref=first; 
+	model survival_time*pd(0) = psdiuretics_av age / eventcode=1 risklimits;
+run;
+proc phreg data=cms.study_cohort_2017_cvd;;
+	class psdiuretics_arrhy (ref='1')/ param=ref ref=first; 
+	model survival_time*pd(0) = psdiuretics_arrhy age / eventcode=1 risklimits;
+run;
+proc phreg data=cms.study_cohort_2017_cvd;;
+	class psdiuretics_platelets (ref='1')/ param=ref ref=first; 
+	model survival_time*pd(0) = psdiuretics_platelets age / eventcode=1 risklimits;
+run;
+proc phreg data=cms.study_cohort_2017_cvd;;
+	class psdiuretics_bb (ref='1')/ param=ref ref=first; 
+	model survival_time*pd(0) = psdiuretics_bb age/ eventcode=1 risklimits;
+run;
+proc phreg data=cms.study_cohort_2017_cvd;;
+	class psdiuretics_ccb (ref='1')/ param=ref ref=first; 
+	model survival_time*pd(0) = psdiuretics_ccb age/ eventcode=1 risklimits;
+run;
+proc phreg data=cms.study_cohort_2017_cvd;;
+	class psdiuretics_otherdiuretics (ref='1') / param=ref ref=first; 
+	model survival_time*pd(0) = psdiuretics_otherdiuretics age/ eventcode=1 risklimits;
+run;
