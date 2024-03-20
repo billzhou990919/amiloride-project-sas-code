@@ -276,6 +276,138 @@ proc means data=cms.study_cohort_2017_diabetes mean;
     var age;
     where tzd = 1;
 run;
+proc means data=cms.study_cohort_2017_diabetes sum;
+    var survival_time;
+    where metformin = 1;
+run;
+proc means data=cms.study_cohort_2017_diabetes sum;
+    var survival_time;
+    where dpp4 = 1;
+run;
+proc means data=cms.study_cohort_2017_diabetes sum;
+    var survival_time;
+    where glp1 = 1;
+run;
+proc means data=cms.study_cohort_2017_diabetes sum;
+    var survival_time;
+    where sglt2 = 1;
+run;
+proc means data=cms.study_cohort_2017_diabetes sum;
+    var survival_time;
+    where sulf = 1;
+run;
+proc means data=cms.study_cohort_2017_diabetes sum;
+    var survival_time;
+    where tzd = 1;
+run;
+
+data cms.diabetes_drug_claims_2016;
+    set cms.alldrug2016;
+    if upcase(gnn) in: ('METFORMIN', 'ALOGLIPTIN', 'LINAGLIPTIN', 'SAXAGLIPTIN', 'SITAGLIPTIN', 'DULAGLUTIDE', 'EXENATIDE', 'LIRAGLUTIDE', 'LIXISENATIDE', 'SEMAGLUTIDE', 'TIRZEPATIDE', 
+'BEXAGLIFLOZIN', 'CANAGLIFLOZIN', 'DAPAGLIFLOZIN', 'EMPAGLIFLOZIN', 'GLIMEPIRIDE', 'GLIPIZIDE', 'GLYBURIDE', 'ROSIGLITAZONE', 'PIOGLITAZONE');
+run;
+
+proc sql;
+    create table exclude_individuals as
+    select distinct a.bene_id
+    from cms.study_cohort_2017_diabetes as a, cms.diabetes_drug_claims_2016 as b
+    where a.bene_id = b.bene_id
+    and b.srvc_dt between (a.index_date - 365) and a.index_date;
+Quit;
+proc sql;
+    create table cms.study_cohort_2017_diabetes_new as
+    select *
+    from cms.study_cohort_2017_diabetes
+    where bene_id not in (select bene_id from exclude_individuals);
+Quit;
+
+
+proc freq data=cms.study_cohort_2017_diabetes_new;
+	table metformin * pd;
+run;
+proc freq data=cms.study_cohort_2017_diabetes_new;
+	table dpp4 * pd;
+run;
+proc freq data=cms.study_cohort_2017_diabetes_new;
+	table glp1 * pd;
+run;
+proc freq data=cms.study_cohort_2017_diabetes_new;
+	table sglt2 * pd;
+run;
+proc freq data=cms.study_cohort_2017_diabetes_new;
+	table sulf * pd;
+run;
+proc freq data=cms.study_cohort_2017_diabetes_new;
+	table tzd * pd;
+run;
+
+proc means data=cms.study_cohort_2017_diabetes_new mean;
+    var age;
+    where metformin = 1;
+run;
+proc means data=cms.study_cohort_2017_diabetes_new mean;
+    var age;
+    where dpp4 = 1;
+run;
+proc means data=cms.study_cohort_2017_diabetes_new mean;
+    var age;
+    where glp1 = 1;
+run;
+proc means data=cms.study_cohort_2017_diabetes_new mean;
+    var age;
+    where sglt2 = 1;
+run;
+proc means data=cms.study_cohort_2017_diabetes_new mean;
+    var age;
+    where sulf = 1;
+run;
+proc means data=cms.study_cohort_2017_diabetes_new mean;
+    var age;
+    where tzd = 1;
+run;
+
+proc means data=cms.study_cohort_2017_diabetes_new sum;
+    var survival_time;
+    where metformin = 1;
+run;
+proc means data=cms.study_cohort_2017_diabetes_new sum;
+    var survival_time;
+    where dpp4 = 1;
+run;
+proc means data=cms.study_cohort_2017_diabetes_new sum;
+    var survival_time;
+    where glp1 = 1;
+run;
+proc means data=cms.study_cohort_2017_diabetes_new sum;
+    var survival_time;
+    where sglt2 = 1;
+run;
+proc means data=cms.study_cohort_2017_diabetes_new sum;
+    var survival_time;
+    where sulf = 1;
+run;
+proc means data=cms.study_cohort_2017_diabetes_new sum;
+    var survival_time;
+    where tzd = 1;
+run;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /*hazard ratio*/
 /*first get drug combination indicators*/
