@@ -604,14 +604,14 @@ run;
 
 
 data _null_;
-    set cms.cvd16to19day0v2   nobs=nobs_var;
+    set cms.study_cohort_16to19_cvd   nobs=nobs_var;
     call symput('obs_count', nobs_var);
     stop;
 run;
 
 proc sql noprint;
     select count(distinct bene_id) into :unique_patients
-    from cms.cvd16to19day0v2;
+    from cms.study_cohort_16to19_cvd;
 quit;
 
 %put Number of Observations: &obs_count;
@@ -619,9 +619,94 @@ quit;
 
 
 
+data cms.study_cohort_16to19_cvd;
+  set cms.study_cohort_16to19_cvd;
+  amiloride = 0;
+  eplerenone = 0;
+  spironolactone = 0;
+  triamterene = 0;
+  psdiuretics = 0;
+  acei = 0;
+  arb = 0;
+  av = 0;
+  antiarrhythimcs = 0;
+  antiplatelets = 0;
+  bb = 0;
+  ccb = 0;
+  otherdiuretics = 0;
+  if upcase(gnn) in: ('AMILORIDE') then amiloride = 1;
+  if upcase(gnn) in: ('EPLERENONE') then eplerenone = 1;
+  if upcase(gnn) in: (‘SPIRONOLACTONE’) then spironolactone = 1;
+  if upcase(gnn) in: (‘TRIAMTERENE’) then triamterene = 1; 
+  if upcase(gnn) in: ('AMILORIDE', 'EPLERENONE', 'SPIRONOLACTONE', 'TRIAMTERENE') then psdiuretics = 1;
+  if upcase(gnn) in: ('BENAZEPRIL', 'CAPTOPRIL', 'CILAZAPRIL', 'ENALAPRIL', 'ENALAPRILAT', 'FOSINOPRIL', 'LISINOPRIL', 'MOEXIPRIL', 'PERINDOPRIL', 'QUINAPRIL', 'RAMIPRIL', 
+'TRANDOLAPRIL', 'SPIRAPRIL', 'TEMOCAPRIL', 'ZOFENOPRIL', 'IMIDAPRIL', 'DELAPRIL') then acei = 1;
+  if upcase(gnn) in: ('VALSARTAN', 'OLMESARTAN', 'EPROSARTAN', 'TELMISARTAN', 'IRBESARTAN', 'TASOSARTAN', 'AZILSARTAN', 'FIMASARTAN', 'CANDESARTAN', 'LOSARTAN') then arb = 1;
+  if upcase(gnn) in: ('NITROGLYCERIN', 'GLYCERYL TRINITRATE', 'ISOSORBIDE DINITRATE', 'ISOSORBIDE MONONITRATE', 'ERYTHRITYL TETRANITRATE', 'PENTAERYTHRITOL TETRANITRATE', 
+'NICORANDIL', 'MOLSIDOMINE', 'TRAPIDIL', 'IMOLAMINE', 'HEXOBENDINE') then av = 1;
+  if upcase(gnn) in: ('QUINIDINE', 'PROCAINAMIDE', 'DISOPYRAMIDE', 'SPARTEINE', 'AJMALINE', 'PRAJMALINE', 'LORAJMINE', 'HYDROQUINIDINE', 'LIDOCAINE', 'MEXILETINE', 'TOCAINIDE',
+'APRINDINE', 'PROPAFENONE', 'FLECAINIDE', 'LORCAINIDE', 'ENCAINIDE', 'ETHACIZINE', 'AMIODARONE', 'BRETYLIUM', 'BUNAFTINE', 'DOFETILIDE', 'IBUTILIDE', 'TEDISAMIL', 'DRONEDARONE', 
+'MORACIZINE', 'CIBENZOLINE', 'VERNAKALANT') then antiarrhythimcs = 1;
+  if upcase(gnn) in: ('DITAZOLE', 'CLORICROMEN', 'PICOTAMIDE', 'CLOPIDOGREL', 'TICLOPIDINE', 'DIPYRIDAMOLE', 'CARBASALATE CALCIUM', 'EPOPROSTENOL', 'INDOBUFEN', 'ILOPROST', 
+'ABCIXIMAB', 'ALOXIPRIN', 'EPTIFIBATIDE', 'TIROFIBAN', 'TRIFLUSAL', 'BERAPROST', 'TREPROSTINIL', 'PRASUGREL', 'CILOSTAZOL', 'TICAGRELOR', 'CANGRELOR', 'VORAPAXAR', 'SELEXIPAG') then antiplatelets = 1;
+  if upcase(gnn) in: ('ALPRENOLOL', 'OXPRENOLOL', 'PINDOLOL', 'PROPRANOLOL', 'TIMOLOL', 'SOTALOL', 'NADOLOL', 'MEPINDOLOL', 'CARTEOLOL', 'TERTATOLOL', 'BOPINDOLOL', 'BUPRANOLOL', 
+'PENBUTOLOL', 'CLORANOLOL', 'PRACTOLOL', 'METOPROLOL', 'ATENOLOL', 'ACEBUTOLOL', 'BETAXOLOL', 'BEVANTOLOL', 'BISOPROLOL', 'CELIPROLOL', 'ESMOLOL', 'EPANOLOL', 'S-ATENOLOL', 
+'NEBIVOLOL', 'TALINOLOL', 'LANDIOLOL', 'LABETALOL', 'CARVEDILOL') then bb = 1;
+  if upcase(gnn) in: ('AMLODIPINE', 'FELODIPINE', 'ISRADIPINE', 'NICARDIPINE', 'NIFEDIPINE', 'NIMODIPINE', 'NISOLDIPINE', 'NITRENDIPINE', 'LACIDIPINE', 'NILVADIPINE', 'MANIDIPINE',
+'BARNIDIPINE', 'LERCANIDIPINE', 'CILNIDIPINE', 'BENIDIPINE', 'CLEVIDIPINE', 'MIBEFRADIL', 'FENDILINE', 'BEPRIDIL', 'LIDOFLAZINE', 'PERHEXILINE') then ccb = 1;
+  if upcase(gnn) in: ('BENDROFLUMETHIAZIDE', 'HYDROFLUMETHIAZIDE', 'HYDROCHLOROTHIAZIDE', 'CHLOROTHIAZIDE', 'POLYTHIAZIDE', 'TRICHLORMETHIAZIDE', 'CYCLOPENTHIAZIDE',
+'METHYCLOTHIAZIDE', 'CYCLOTHIAZIDE', 'MEBUTIZIDE', 'QUINETHAZONE', 'CLOPAMIDE', 'CHLORTALIDONE', 'MEFRUSIDE', 'CLOFENAMIDE', 'METOLAZONE', 'XIPAMIDE', 'INDAPAMIDE', 
+'CLOREXOLONE', 'FENQUIZONE', 'MERSALYL', 'THEOBROMINE', 'CICLETANINE', 'FUROSEMIDE', 'BUMETANIDE', 'PIRETANIDE', 'TORASEMIDE', 'ETACRYNIC ACID', 'TIENILIC ACID', 
+'MUZOLIMINE', 'ETOZOLIN', 'POTASSIUM CANRENOATE', 'CANRENONE', 'TOLVAPTAN', 'CONIVAPTAN') then otherdiuretics = 1;
+run;
 
 
 
+
+
+proc sort data=cms.study_cohort_16to19_cvd out=cms.study_cohort_16to19_cvdv2 nodupkey;
+   by bene_id;
+run;
+
+proc freq data=cms.study_cohort_16to19_cvdv2;
+	table psdiuretics * pd;
+run;
+proc freq data=cms.study_cohort_16to19_cvdv2;
+	table amiloride * pd;
+run;
+proc freq data=cms.study_cohort_16to19_cvdv2;
+	table eplerenone * pd;
+run;
+proc freq data=cms.study_cohort_16to19_cvdv2;
+	table spironolactone * pd;
+run;
+proc freq data=cms.study_cohort_16to19_cvdv2;
+	table triamterene * pd;
+run;
+proc freq data=cms.study_cohort_16to19_cvdv2;
+	table acei * pd;
+run;
+proc freq data=cms.study_cohort_16to19_cvdv2;
+	table arb * pd;
+run;
+proc freq data=cms.study_cohort_16to19_cvdv2;
+	table av * pd;
+run;
+proc freq data=cms.study_cohort_16to19_cvdv2;
+	table antiarrhythimcs * pd;
+run;
+proc freq data=cms.study_cohort_16to19_cvdv2;
+	table antiplatelets * pd;
+run;
+proc freq data=cms.study_cohort_16to19_cvdv2;
+	table bb * pd;
+run;
+proc freq data=cms.study_cohort_16to19_cvdv2;
+	table ccb * pd;
+run;
+proc freq data=cms.study_cohort_16to19_cvdv2;
+	table otherdiuretics * pd;
+run;
 
 
 
