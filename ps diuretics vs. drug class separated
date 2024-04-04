@@ -253,3 +253,34 @@ run;
 proc print data=rates;
     title "Incidence Rates for bb vs otherdiuretics";
 run;
+
+
+
+
+
+
+proc freq data=cms.study_cohort_2017_cvd;
+	table 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
