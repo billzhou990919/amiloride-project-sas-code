@@ -1,0 +1,7 @@
+proc freq data=cms.study_cohort_v2;
+	table amiloride * pd;
+run;
+
+proc freq data=cms.study_cohort_v2;
+	table amiloride * pd;
+run;
