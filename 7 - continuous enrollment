@@ -324,13 +324,20 @@ quit;
 
 
 //////////////////////////////////////////////////////////////////////////////
+proc sort data=cms.no_prior_pd out=cms.no_prior_pd_unique nodupkey;
+    by bene_id;
+run;
 
+/* Keep only the bene_id column */
+data cms.no_prior_pd_unique;
+    set cms.no_prior_pd_unique(keep=bene_id index_date);
+run;
 
 
 %macro enroll (yr = );
 	Data enroll_&yr;
 		merge cms.mbsf&yr.(keep=bene_id mdcr_entlmt_buyin_ind_01-mdcr_entlmt_buyin_ind_12 ptd_cntrct_id_01-ptd_cntrct_id_12 hmo_ind_01-hmo_ind_12) 
-			  cms.no_prior_pd(in=in2 keep=bene_id); 
+			  cms.no_prior_pd_unique(in=in2 keep=bene_id); 
 		by bene_id;
 		rename mdcr_entlmt_buyin_ind_01-mdcr_entlmt_buyin_ind_12 = mdcr_entlmt_buyin_ind_&yr._01-mdcr_entlmt_buyin_ind_&yr._12
 			   ptd_cntrct_id_01-ptd_cntrct_id_12 = ptd_cntrct_id_&yr._01-ptd_cntrct_id_&yr._12
@@ -344,11 +351,11 @@ quit;
 %enroll (yr = 2017);
 %enroll (yr = 2018);
 %enroll (yr = 2019);
-proc sort data=enroll_15 out=enroll_nodup_15 nodup; by bene_id; run;
-proc sort data=enroll_16 out=enroll_nodup_16 nodup; by bene_id; run;
-proc sort data=enroll_17 out=enroll_nodup_17 nodup; by bene_id; run;
-proc sort data=enroll_18 out=enroll_nodup_18 nodup; by bene_id; run;
-proc sort data=enroll_19 out=enroll_nodup_19 nodup; by bene_id; run;
+proc sort data=enroll_2015 out=enroll_nodup_15 nodup; by bene_id; run;
+proc sort data=enroll_2016 out=enroll_nodup_16 nodup; by bene_id; run;
+proc sort data=enroll_2017 out=enroll_nodup_17 nodup; by bene_id; run;
+proc sort data=enroll_2018 out=enroll_nodup_18 nodup; by bene_id; run;
+proc sort data=enroll_2019 out=enroll_nodup_19 nodup; by bene_id; run;
 
 
 proc sql;	
@@ -360,7 +367,7 @@ proc sql;
 quit;
 
 data enroll_pt;
-	merge cms.no_prior_pd enroll;
+	merge cms.no_prior_pd_unique enroll;
 	by bene_id;
 run;
 
@@ -369,14 +376,15 @@ run;
 data cms.continuous_enrollment_amiloride;				* 57,093;
 	set enroll_pt;
 
-	Diag_index = (year(index_dt)-2015)*12 + month(index_dt);
+	Diag_index = (year(index_date)-2015)*12 + month(index_date);
 	start_mon= Diag_index-12;
 
 	* Part AB;
-	ARRAY AB{48} $ mdcr_entlmt_buyin_ind_15_01 - mdcr_entlmt_buyin_ind_15_12
-				   mdcr_entlmt_buyin_ind_16_01 - mdcr_entlmt_buyin_ind_16_12
-				   mdcr_entlmt_buyin_ind_17_01 - mdcr_entlmt_buyin_ind_17_12
-				   mdcr_entlmt_buyin_ind_18_01 - mdcr_entlmt_buyin_ind_18_12;
+	ARRAY AB{60} $ mdcr_entlmt_buyin_ind_2015_01 - mdcr_entlmt_buyin_ind_2015_12
+				   mdcr_entlmt_buyin_ind_2016_01 - mdcr_entlmt_buyin_ind_2016_12
+				   mdcr_entlmt_buyin_ind_2017_01 - mdcr_entlmt_buyin_ind_2017_12
+				   mdcr_entlmt_buyin_ind_2018_01 - mdcr_entlmt_buyin_ind_2018_12
+				   mdcr_entlmt_buyin_ind_2019_01 - mdcr_entlmt_buyin_ind_2019_12								;
 
 	ABflag = 0;
 	DO  i = start_mon TO Diag_index;
@@ -385,10 +393,11 @@ data cms.continuous_enrollment_amiloride;				* 57,093;
 	if ABflag=13; 
 
 	* Part D;
-	ARRAY cd{48} $ ptd_cntrct_id_15_01 - ptd_cntrct_id_15_12
-				   ptd_cntrct_id_16_01 - ptd_cntrct_id_16_12
-				   ptd_cntrct_id_17_01 - ptd_cntrct_id_17_12
-				   ptd_cntrct_id_18_01 - ptd_cntrct_id_18_12;
+	ARRAY cd{60} $ ptd_cntrct_id_2015_01 - ptd_cntrct_id_2015_12
+				   ptd_cntrct_id_2016_01 - ptd_cntrct_id_2016_12
+				   ptd_cntrct_id_2017_01 - ptd_cntrct_id_2017_12
+				   ptd_cntrct_id_2018_01 - ptd_cntrct_id_2018_12
+                                   ptd_cntrct_id_2019_01 - ptd_cntrct_id_2019_12;
 
 	Dflag = 0;
 	DO  i = start_mon TO Diag_index;
@@ -398,10 +407,11 @@ data cms.continuous_enrollment_amiloride;				* 57,093;
 	if Dflag=13;
 
 	* no HMO;
-	ARRAY hmo{48} $ hmo_ind_15_01-hmo_ind_15_12
-				    hmo_ind_16_01-hmo_ind_16_12
-				    hmo_ind_17_01-hmo_ind_17_12
-				    hmo_ind_18_01-hmo_ind_18_12;
+	ARRAY hmo{60} $ hmo_ind_2015_01-hmo_ind_2015_12
+				    hmo_ind_2016_01-hmo_ind_2016_12
+				    hmo_ind_2017_01-hmo_ind_2017_12
+				    hmo_ind_2018_01-hmo_ind_2018_12
+				    hmo_ind_2019_01-hmo_ind_2019_12;
 
 	hmoflag = 0;
 	DO  i = start_mon TO Diag_index;
@@ -410,18 +420,18 @@ data cms.continuous_enrollment_amiloride;				* 57,093;
 
 	if hmoflag=13;
 
-	drop mdcr_entlmt_buyin_ind_15_01 - mdcr_entlmt_buyin_ind_15_12
-		 mdcr_entlmt_buyin_ind_16_01 - mdcr_entlmt_buyin_ind_16_12
-		 mdcr_entlmt_buyin_ind_17_01 - mdcr_entlmt_buyin_ind_17_12
-		 mdcr_entlmt_buyin_ind_18_01 - mdcr_entlmt_buyin_ind_18_12
-		 ptd_cntrct_id_15_01 - ptd_cntrct_id_15_12
-		 ptd_cntrct_id_16_01 - ptd_cntrct_id_16_12
-		 ptd_cntrct_id_17_01 - ptd_cntrct_id_17_12
-	 	 ptd_cntrct_id_18_01 - ptd_cntrct_id_18_12
-		 hmo_ind_15_01-hmo_ind_15_12
-		 hmo_ind_16_01-hmo_ind_16_12
-		 hmo_ind_17_01-hmo_ind_17_12
-		 hmo_ind_18_01-hmo_ind_18_12
+	drop mdcr_entlmt_buyin_ind_2015_01 - mdcr_entlmt_buyin_ind_2015_12
+		 mdcr_entlmt_buyin_ind_2016_01 - mdcr_entlmt_buyin_ind_2016_12
+		 mdcr_entlmt_buyin_ind_2017_01 - mdcr_entlmt_buyin_ind_2017_12
+		 mdcr_entlmt_buyin_ind_2018_01 - mdcr_entlmt_buyin_ind_2018_12 mdcr_entlmt_buyin_ind_2019_01 - mdcr_entlmt_buyin_ind_2019_12
+		 ptd_cntrct_id_2015_01 - ptd_cntrct_id_2015_12
+		 ptd_cntrct_id_2016_01 - ptd_cntrct_id_2016_12
+		 ptd_cntrct_id_2017_01 - ptd_cntrct_id_2017_12
+	 	 ptd_cntrct_id_2018_01 - ptd_cntrct_id_2018_12 ptd_cntrct_id_2019_01 - ptd_cntrct_id_2019_12
+		 hmo_ind_2015_01-hmo_ind_2015_12
+		 hmo_ind_2016_01-hmo_ind_2016_12
+		 hmo_ind_2017_01-hmo_ind_2017_12
+		 hmo_ind_2018_01-hmo_ind_2018_12 hmo_ind_2019_01-hmo_ind_2019_12
 		 Diag_index start_mon ABflag Dflag hmoflag i;
 run;
 
