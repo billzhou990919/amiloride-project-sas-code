@@ -56,7 +56,26 @@ proc means data=cms.study_cohort_v2 mean;
     where other_psdiuretics = 1;
 run;
 
-
+proc means data=cms.study_cohort_v2 sum;
+    var survival_time;
+    where amiloride = 1;
+run;
+proc means data=cms.study_cohort_v2 sum;
+    var survival_time;
+    where eplerenone = 1;
+run;
+proc means data=cms.study_cohort_v2 sum;
+    var survival_time;
+    where spironolactone = 1;
+run;
+proc means data=cms.study_cohort_v2 sum;
+    var survival_time;
+    where triamterene = 1;
+run;
+proc means data=cms.study_cohort_v2 sum;
+    var survival_time;
+    where other_psdiuretics = 1;
+run;
 
 
 
@@ -97,6 +116,26 @@ proc means data=cms.study_cohort_prevalent_v2 mean;
 run;
 proc means data=cms.study_cohort_prevalent_v2 mean;
     var age;
+    where other_psdiuretics = 1;
+run;
+proc means data=cms.study_cohort_prevalent_v2 sum;
+    var survival_time;
+    where amiloride = 1;
+run;
+proc means data=cms.study_cohort_prevalent_v2 sum;
+    var survival_time;
+    where eplerenone = 1;
+run;
+proc means data=cms.study_cohort_prevalent_v2 sum;
+    var survival_time;
+    where spironolactone = 1;
+run;
+proc means data=cms.study_cohort_prevalent_v2 sum;
+    var survival_time;
+    where triamterene = 1;
+run;
+proc means data=cms.study_cohort_prevalent_v2 sum;
+    var survival_time;
     where other_psdiuretics = 1;
 run;
 
