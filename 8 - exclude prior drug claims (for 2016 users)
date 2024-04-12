@@ -1,3 +1,10 @@
+proc sql;
+   create table cms.amiloride_continuous_enrollment as
+   select *
+   from cms.nopriorpd
+   where bene_id in (select bene_id from cms.continuous_enrollment_amiloride);
+quit;
+
 DATA cms.drug_claims;
     SET cms.all_amiloride_2014 cms.all_amiloride_2015 cms.all_amiloride_2016 cms.all_amiloride_2017 cms.all_amiloride_2018 cms.all_amiloride_2019  cms.all_diuretics_2014 cms.all_diuretics_2015 cms.all_diuretics_2016 
 cms.all_diuretics_2017 
@@ -10,7 +17,7 @@ RUN;
 proc sql;
     create table cms.enrollment_2016 as
     select *
-    from cms.continuous_enrollment_partd
+    from cms.continuous_enrollment_amiloride
     where year(index_date) = 2016;
 quit;
 
@@ -19,12 +26,12 @@ proc sql;
     select distinct a.bene_id
     from cms.enrollment_2016 as a, cms.drug_claims as b
     where a.bene_id = b.bene_id
-    and b.srvc_dt between (a.index_date - 365) and a.index_date;
+    and (a.index_date - 365) <= b.srvc_dt < a.index_date;
 Quit;
 proc sql;
     create table cms.study_cohort as
     select *
-    from cms.continuous_enrollment
+    from cms.amiloride_continuous_enrollment
     where bene_id not in (select bene_id from cms.exclude_individuals);
 Quit;
 
