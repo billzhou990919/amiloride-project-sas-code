@@ -78,13 +78,40 @@ proc means data=cms.study_cohort_v2 sum;
 run;
 
 
+data cms.study_cohort_v2;
+	set cms.study_cohort_v2;
+	amiloride_eplerenone =.;
+	if amiloride=1 then amiloride_eplerenone=1;
+	if eplerenone=1 then amiloride_eplerenone=0;
+run;
+data cms.study_cohort_v2;
+	set cms.study_cohort_v2;
+	amiloride_spironolactone =.;
+	if amiloride=1 then amiloride_spironolactone=1;
+	if spironolactone=1 then amiloride_spironolactone=0;
+run;
+data cms.study_cohort_v2;
+	set cms.study_cohort_v2;
+	amiloride_triamterene =.;
+	if amiloride=1 then amiloride_triamterene=1;
+	if triamterene=1 then amiloride_triamterene=0;
+run;
+
 proc phreg data=cms.study_cohort_v2;;
 	class amiloride (ref='1')/ param=ref ref=first; 
 	model survival_time*pd(0) = amiloride age / eventcode=1 risklimits;
 run;
-proc phreg data=cms.study_cohort_2017_cvd;;
-	class psdiuretics_arb (ref='1')/ param=ref ref=first; 
-	model survival_time*pd(0) = psdiuretics_arb age / eventcode=1 risklimits;
+proc phreg data=cms.study_cohort_v2;;
+	class amiloride_eplerenone (ref='1')/ param=ref ref=first; 
+	model survival_time*pd(0) = amiloride_eplerenone age / eventcode=1 risklimits;
+run;
+proc phreg data=cms.study_cohort_v2;;
+	class amiloride_spironolactone (ref='1')/ param=ref ref=first; 
+	model survival_time*pd(0) = amiloride_spironolactone age / eventcode=1 risklimits;
+run;
+proc phreg data=cms.study_cohort_v2;;
+	class amiloride_triamterene (ref='1')/ param=ref ref=first; 
+	model survival_time*pd(0) = amiloride_triamterene age / eventcode=1 risklimits;
 run;
 
 
@@ -144,6 +171,43 @@ run;
 proc means data=cms.study_cohort_prevalent_v2 sum;
     var survival_time;
     where other_psdiuretics = 1;
+run;
+
+
+data cms.study_cohort_prevalent_v2;
+	set cms.study_cohort_prevalent_v2;
+	amiloride_eplerenone =.;
+	if amiloride=1 then amiloride_eplerenone=1;
+	if eplerenone=1 then amiloride_eplerenone=0;
+run;
+data cms.study_cohort_prevalent_v2;
+	set cms.study_cohort_prevalent_v2;
+	amiloride_spironolactone =.;
+	if amiloride=1 then amiloride_spironolactone=1;
+	if spironolactone=1 then amiloride_spironolactone=0;
+run;
+data cms.study_cohort_prevalent_v2;
+	set cms.study_cohort_prevalent_v2;
+	amiloride_triamterene =.;
+	if amiloride=1 then amiloride_triamterene=1;
+	if triamterene=1 then amiloride_triamterene=0;
+run;
+
+proc phreg data=cms.study_cohort_prevalent_v2;;
+	class amiloride (ref='1')/ param=ref ref=first; 
+	model survival_time*pd(0) = amiloride age / eventcode=1 risklimits;
+run;
+proc phreg data=cms.study_cohort_prevalent_v2;;
+	class amiloride_eplerenone (ref='1')/ param=ref ref=first; 
+	model survival_time*pd(0) = amiloride_eplerenone age / eventcode=1 risklimits;
+run;
+proc phreg data=cms.study_cohort_prevalent_v2;;
+	class amiloride_spironolactone (ref='1')/ param=ref ref=first; 
+	model survival_time*pd(0) = amiloride_spironolactone age / eventcode=1 risklimits;
+run;
+proc phreg data=cms.study_cohort_prevalent_v2;;
+	class amiloride_triamterene (ref='1')/ param=ref ref=first; 
+	model survival_time*pd(0) = amiloride_triamterene age / eventcode=1 risklimits;
 run;
 
 
