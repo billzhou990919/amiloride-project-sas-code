@@ -19,36 +19,9 @@ proc datasets library=cms nolist;
 run;
 quit;
 
-/*exclude those younger than 65 on index date*/
-proc sort data=cms.mbsf(keep=bene_id bene_birth_dt) out=cms.bene_births_dedup nodupkey;
-    by bene_id;
-run;
-
-/* Step 2: Merge the deduplicated birth dates with cms.all_drug_claims_index */
-data cms.all_drug_claims_index_birth;
-    merge cms.all_drug_claims_index(in=a) cms.bene_births_dedup(in=b);
-    by bene_id;
-    birth_date = bene_birth_dt;
-    if a;  /* Keep all records from cms.all_drug_claims_index */
-Run;
-
-data cms.all_drug_claims_index_birth;
-    set cms.all_drug_claims_index_birth(drop=bene_birth_dt);
-run;
-
-Data cms.all_drug_claims_index_birth;
-Set cms.all_drug_claims_index_birth;
-Where index_date ne .;
-run;
-
 data cms.exclude65;
-    set cms.all_drug_claims_index_birth;
-
-    /* Calculate age at index_date */
-    age = int((index_date - birth_date) / 365.25);
-
-    /* Keep only records where age is 65 or older */
-    if age >= 65;
-    
-     /* Remove the temporary age variable */
+    set cms.all_drug_claims_index;
+    age = int((index_date - bene_birth_dt)/365.25);
+    if age >= 66;
 run;
+
