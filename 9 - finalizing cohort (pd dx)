@@ -119,3 +119,141 @@ pd_itt = pd;
 if index_date < clm_from_dt < min (of discontinuation change_start) then pd_perprotocol = 1;
 run;
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+////////////////////////////////////
+proc sql;
+    create table cms.analytical_cohort as
+    select * from cms.all_drug_claims
+    where bene_id in (select bene_id from cms.study_cohort);
+quit;
+
+Data cms.analytical_cohort;
+Set cms.analytical_cohort;
+Supp_end = srvc_dt + days_suply_num;
+run;
+
+proc sql;
+    create table max_supp_end as
+    select bene_id, max(supp_end) as discontinuation
+    from cms.analytical_cohort
+    group by bene_id;
+quit;
+
+/* Step 2: Merge the max value with the original dataset */
+data cms.analytical_cohort;
+    merge cms.study_cohort(in=a) max_supp_end(in=b);
+    by bene_id;
+
+    /* Keep all rows from the original dataset */
+    if a;
+run;
+
+/* Optional: Cleanup by deleting the temporary table */
+proc datasets library=work nolist;
+    delete max_supp_end;
+run;
+Quit;
+
+
+data cms.study_cohort;
+   set cms.analytical_cohort;
+   by bene_id;
+   if first.bene_id;
+   keep bene_id gndr_cd amiloride index_date birth_date discontinuation bn gnn;
+run;
+
+
+proc sql;
+   create table cms.study_cohort as
+   select a.*, b.change_start, b.change_detected
+   from cms.study_cohort as a
+   left join cms.unique_drug_user_switching as b
+   on a.bene_id = b.bene_id;
+quit;
+
+/*getting pd indicator and dx time*/
+proc sort data=cms.all_parkinson; by bene_id; run;
+
+/* Merge the summary dataset with all_bleeding based on enrolid */
+data cms.merged_dataset;
+    merge cms.study_cohort(in=a) cms.all_parkinson(in=b);
+    by bene_id;
+    if a and b; /* This keeps only the matched records */
+run;
+
+/* Filter the rows based on the date conditions and create a new dataset */
+data cms.adverse_event;
+    set cms.merged_dataset;
+    format index_date discontinuation clm_from_dt mmddyy10.; /* Ensure dates are in the correct format */
+    if clm_from_dt >= index_date;
+Run;
+
+Proc datasets library=cms nolist;
+Delete merged_dataset;
+Run;
+
+/*only keeping the first bleeding event*/
+/* Sort the dataset by enrolid and admdate */
+proc sort data=cms.adverse_event;
+    by bene_id clm_from_dt;
+run;
+
+/* Keep only the first occurrence of each enrolid (i.e., the row with the earliest admdate) */
+data cms.adverse_event; 
+    set cms.adverse_event;
+    by bene_id;
+    if first.bene_id;
+run;
+
+
+
+proc sql;
+    create table cms.study_cohort_v2 as
+    select a.*, b.clm_from_dt
+    from cms.study_cohort as a
+    left join cms.adverse_event as b
+    on a.bene_id = b.bene_id;
+quit;
+
+data cms.study_cohort_v2;
+set cms.study_cohort_v2;
+pd = 0;
+if clm_from_dt ne . then pd = 1;
+run;
+
+data cms.study_cohort_v2; 
+    set cms.study_cohort_v2;
+    study_end = 21914;
+    censor_date = min(of discontinuation change_start clm_from_dt study_end);
+    format censor_date discontinuation index_date change_start clm_from_dt MMDDYY10.; 
+run;
+
+/*calculate survival time*/
+data cms.study_cohort_v2; 
+    set cms.study_cohort_v2;
+    survival_time = censor_date - index_date;
+run;
+
+
+data cms.study_cohort_v2;
+set cms.study_cohort_v2;
+pd_perprotocol = 0;
+pd_itt = pd;
+if index_date < clm_from_dt < min (of discontinuation change_start) then pd_perprotocol = 1;
+run;
+
