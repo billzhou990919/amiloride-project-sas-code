@@ -319,3 +319,129 @@ proc sql;
     inner join cms.final_continuous_enrollment as b
     on a.bene_id = b.bene_id;
 quit;
+
+
+
+
+//////////////////////////////////////////////////////////////////////////////
+
+
+
+%macro enroll (yr = );
+	Data enroll_&yr;
+		merge cms.mbsf&yr.(keep=bene_id mdcr_entlmt_buyin_ind_01-mdcr_entlmt_buyin_ind_12 ptd_cntrct_id_01-ptd_cntrct_id_12 hmo_ind_01-hmo_ind_12) 
+			  cms.no_prior_pd(in=in2 keep=bene_id); 
+		by bene_id;
+		rename mdcr_entlmt_buyin_ind_01-mdcr_entlmt_buyin_ind_12 = mdcr_entlmt_buyin_ind_&yr._01-mdcr_entlmt_buyin_ind_&yr._12
+			   ptd_cntrct_id_01-ptd_cntrct_id_12 = ptd_cntrct_id_&yr._01-ptd_cntrct_id_&yr._12
+			   hmo_ind_01-hmo_ind_12 = hmo_ind_&yr._01-hmo_ind_&yr._12;
+		if in2;
+	run;
+
+%mend enroll;
+%enroll (yr = 2015);
+%enroll (yr = 2016);
+%enroll (yr = 2017);
+%enroll (yr = 2018);
+%enroll (yr = 2019);
+proc sort data=enroll_15 out=enroll_nodup_15 nodup; by bene_id; run;
+proc sort data=enroll_16 out=enroll_nodup_16 nodup; by bene_id; run;
+proc sort data=enroll_17 out=enroll_nodup_17 nodup; by bene_id; run;
+proc sort data=enroll_18 out=enroll_nodup_18 nodup; by bene_id; run;
+proc sort data=enroll_19 out=enroll_nodup_19 nodup; by bene_id; run;
+
+
+proc sql;	
+	create table enroll as 
+	select a.*, b.*, c.*, d.*, e.*
+	from enroll_nodup_15 as a , enroll_nodup_16 as b, enroll_nodup_17 as c , enroll_nodup_18 as d , enroll_nodup_19 as e
+	where a.bene_id = b.bene_id = c.bene_id = d.bene_id = e.bene_id
+	order by bene_id;
+quit;
+
+data enroll_pt;
+	merge cms.no_prior_pd enroll;
+	by bene_id;
+run;
+
+
+**Part A B D and no HMO enrollment;
+data cms.continuous_enrollment_amiloride;				* 57,093;
+	set enroll_pt;
+
+	Diag_index = (year(index_dt)-2015)*12 + month(index_dt);
+	start_mon= Diag_index-12;
+
+	* Part AB;
+	ARRAY AB{48} $ mdcr_entlmt_buyin_ind_15_01 - mdcr_entlmt_buyin_ind_15_12
+				   mdcr_entlmt_buyin_ind_16_01 - mdcr_entlmt_buyin_ind_16_12
+				   mdcr_entlmt_buyin_ind_17_01 - mdcr_entlmt_buyin_ind_17_12
+				   mdcr_entlmt_buyin_ind_18_01 - mdcr_entlmt_buyin_ind_18_12;
+
+	ABflag = 0;
+	DO  i = start_mon TO Diag_index;
+		IF AB{i} in ('3','C') THEN ABflag=ABflag+1; 
+		END;
+	if ABflag=13; 
+
+	* Part D;
+	ARRAY cd{48} $ ptd_cntrct_id_15_01 - ptd_cntrct_id_15_12
+				   ptd_cntrct_id_16_01 - ptd_cntrct_id_16_12
+				   ptd_cntrct_id_17_01 - ptd_cntrct_id_17_12
+				   ptd_cntrct_id_18_01 - ptd_cntrct_id_18_12;
+
+	Dflag = 0;
+	DO  i = start_mon TO Diag_index;
+		IF (substr(cd(i),1,1) in ('H','R','S','E') or substr(cd(i),1,2)='X0') THEN Dflag=Dflag+1; 
+	END;
+
+	if Dflag=13;
+
+	* no HMO;
+	ARRAY hmo{48} $ hmo_ind_15_01-hmo_ind_15_12
+				    hmo_ind_16_01-hmo_ind_16_12
+				    hmo_ind_17_01-hmo_ind_17_12
+				    hmo_ind_18_01-hmo_ind_18_12;
+
+	hmoflag = 0;
+	DO  i = start_mon TO Diag_index;
+		IF hmo{i} in ('0') THEN hmoflag=hmoflag+1;  
+	END;
+
+	if hmoflag=13;
+
+	drop mdcr_entlmt_buyin_ind_15_01 - mdcr_entlmt_buyin_ind_15_12
+		 mdcr_entlmt_buyin_ind_16_01 - mdcr_entlmt_buyin_ind_16_12
+		 mdcr_entlmt_buyin_ind_17_01 - mdcr_entlmt_buyin_ind_17_12
+		 mdcr_entlmt_buyin_ind_18_01 - mdcr_entlmt_buyin_ind_18_12
+		 ptd_cntrct_id_15_01 - ptd_cntrct_id_15_12
+		 ptd_cntrct_id_16_01 - ptd_cntrct_id_16_12
+		 ptd_cntrct_id_17_01 - ptd_cntrct_id_17_12
+	 	 ptd_cntrct_id_18_01 - ptd_cntrct_id_18_12
+		 hmo_ind_15_01-hmo_ind_15_12
+		 hmo_ind_16_01-hmo_ind_16_12
+		 hmo_ind_17_01-hmo_ind_17_12
+		 hmo_ind_18_01-hmo_ind_18_12
+		 Diag_index start_mon ABflag Dflag hmoflag i;
+run;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
