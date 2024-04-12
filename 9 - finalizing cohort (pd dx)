@@ -127,9 +127,9 @@ data cms.study_cohort_v2;
   spironolactone = 0;
   triamterene = 0;
   other_psdiuretics = 0;
-  if upcase(gnn) in: ('EPLERENONE') then eplerenone = 1;
-  if upcase(gnn) in: (‘SPIRONOLACTONE’) then spironolactone = 1;
-  if upcase(gnn) in: (‘TRIAMTERENE’) then triamterene = 1; 
+  if upcase(gnn) in: ('EPLERENONE', 'INSPRA') or upcase(bn) in: ('EPLERENONE', 'INSPRA') then eplerenone = 1;
+  if upcase(gnn) in: (‘SPIRONOLACTONE’, ‘ALDACTONE’, ‘CAROSPIR’) or upcase(bn) in: (‘SPIRONOLACTONE’, ‘ALDACTONE’, ‘CAROSPIR’) then spironolactone = 1;
+  if upcase(gnn) in: (‘TRIAMTERENE’, ‘DYRENIUM’) or upcase(bn) in: (‘TRIAMTERENE’, ‘DYRENIUM’) then triamterene = 1;
   if amiloride = 0 then other_psdiuretics = 1;
 run;
 
@@ -274,9 +274,9 @@ data cms.study_cohort_prevalent_v2;
   spironolactone = 0;
   triamterene = 0;
   other_psdiuretics = 0;
-  if upcase(gnn) in: ('EPLERENONE') then eplerenone = 1;
-  if upcase(gnn) in: (‘SPIRONOLACTONE’) then spironolactone = 1;
-  if upcase(gnn) in: (‘TRIAMTERENE’) then triamterene = 1; 
+  if upcase(gnn) in: ('EPLERENONE', 'INSPRA') or upcase(bn) in: ('EPLERENONE', 'INSPRA') then eplerenone = 1;
+  if upcase(gnn) in: (‘SPIRONOLACTONE’, ‘ALDACTONE’, ‘CAROSPIR’) or upcase(bn) in: (‘SPIRONOLACTONE’, ‘ALDACTONE’, ‘CAROSPIR’) then spironolactone = 1;
+  if upcase(gnn) in: (‘TRIAMTERENE’, ‘DYRENIUM’) or upcase(bn) in: (‘TRIAMTERENE’, ‘DYRENIUM’) then triamterene = 1; 
   if amiloride = 0 then other_psdiuretics = 1;
 run;
 
