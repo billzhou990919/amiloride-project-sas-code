@@ -1,9 +1,34 @@
 proc freq data=cms.study_cohort_v2;
 	table amiloride * pd;
 run;
+proc freq data=cms.study_cohort_v2;
+	table eplerenone * pd;
+run;
+proc freq data=cms.study_cohort_v2;
+	table spironolactone * pd;
+run;
+proc freq data=cms.study_cohort_v2;
+	table triamterene * pd;
+run;
+proc freq data=cms.study_cohort_v2;
+	table other_psdiuretics * pd;
+run;
+
 
 proc freq data=cms.study_cohort_prevalent_v2;
 	table amiloride * pd;
+run;
+proc freq data=cms.study_cohort_prevalent_v2;
+	table eplerenone * pd;
+run;
+proc freq data=cms.study_cohort_prevalent_v2;
+	table spironolactone * pd;
+run;
+proc freq data=cms.study_cohort_prevalent_v2;
+	table triamterene * pd;
+run;
+proc freq data=cms.study_cohort_prevalent_v2;
+	table other_psdiuretics * pd;
 run;
 
 data cms.study_cohort_v2;
@@ -14,6 +39,42 @@ proc means data=cms.study_cohort_v2 mean;
     var age;
     where amiloride = 1;
 run;
+proc means data=cms.study_cohort_v2 mean;
+    var age;
+    where eplerenone = 1;
+run;
+proc means data=cms.study_cohort_v2 mean;
+    var age;
+    where spironolactone = 1;
+run;
+proc means data=cms.study_cohort_v2 mean;
+    var age;
+    where triamterene = 1;
+run;
+proc means data=cms.study_cohort_v2 mean;
+    var age;
+    where other_psdiuretics = 1;
+run;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 data cms.study_cohort_prevalent_v2;
 	set cms.study_cohort_prevalent_v2;
 	age = intck('year', bene_birth_dt, index_date);
@@ -22,3 +83,21 @@ proc means data=cms.study_cohort_prevalent_v2 mean;
     var age;
     where amiloride = 1;
 run;
+proc means data=cms.study_cohort_prevalent_v2 mean;
+    var age;
+    where eplerenone = 1;
+run;
+proc means data=cms.study_cohort_prevalent_v2 mean;
+    var age;
+    where spironolactone = 1;
+run;
+proc means data=cms.study_cohort_prevalent_v2 mean;
+    var age;
+    where triamterene = 1;
+run;
+proc means data=cms.study_cohort_prevalent_v2 mean;
+    var age;
+    where other_psdiuretics = 1;
+run;
+
+
