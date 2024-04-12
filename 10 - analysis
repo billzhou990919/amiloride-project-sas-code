@@ -78,7 +78,14 @@ proc means data=cms.study_cohort_v2 sum;
 run;
 
 
-
+proc phreg data=cms.study_cohort_v2;;
+	class amiloride (ref='1')/ param=ref ref=first; 
+	model survival_time*pd(0) = amiloride age / eventcode=1 risklimits;
+run;
+proc phreg data=cms.study_cohort_2017_cvd;;
+	class psdiuretics_arb (ref='1')/ param=ref ref=first; 
+	model survival_time*pd(0) = psdiuretics_arb age / eventcode=1 risklimits;
+run;
 
 
 
