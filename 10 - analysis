@@ -33,7 +33,7 @@ run;
 
 data cms.study_cohort_v2;
 	set cms.study_cohort_v2;
-	age = intck('year', bene_birth_dt, index_date);
+	age = intck('year', birth_date, index_date);
 run;
 proc means data=cms.study_cohort_v2 mean;
     var age;
@@ -77,7 +77,7 @@ run;
 
 data cms.study_cohort_prevalent_v2;
 	set cms.study_cohort_prevalent_v2;
-	age = intck('year', bene_birth_dt, index_date);
+	age = intck('year', birth_date, index_date);
 run;
 proc means data=cms.study_cohort_prevalent_v2 mean;
     var age;
