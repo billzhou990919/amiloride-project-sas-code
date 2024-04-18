@@ -136,7 +136,7 @@ KEEP bene_id clm_from_dt;
 Run;
 
 
-/*delete all rows with pd dx 12 months prior to index_date */
+/*delete all rows with pd dx 6 months prior to index_date */
 proc sql;
    create table cms.merged as
    select a.*, b.clm_from_dt
@@ -150,7 +150,7 @@ proc sql;
    create table cms.to_exclude as
    select distinct bene_id
    from cms.merged
-   where intck('month', clm_from_dt, index_date) between -12 and 0;
+   where intck('month', clm_from_dt, index_date) between -6 and 0;
 quit;
 
 /* Exclude the identified individuals from exclude65 */
