@@ -324,7 +324,7 @@ quit;
 
 
 //////////////////////////////////////////////////////////////////////////////
-proc sort data=cms.no_prior_pd out=cms.no_prior_pd_unique nodupkey;
+proc sort data=cms.nopriorpd out=cms.no_prior_pd_unique nodupkey;
     by bene_id;
 run;
 
@@ -377,7 +377,7 @@ data cms.continuous_enrollment_amiloride;				* 57,093;
 	set enroll_pt;
 
 	Diag_index = (year(index_date)-2015)*12 + month(index_date);
-	start_mon= Diag_index-12;
+	start_mon= Diag_index-6;
 
 	* Part AB;
 	ARRAY AB{60} $ mdcr_entlmt_buyin_ind_2015_01 - mdcr_entlmt_buyin_ind_2015_12
@@ -390,7 +390,7 @@ data cms.continuous_enrollment_amiloride;				* 57,093;
 	DO  i = start_mon TO Diag_index;
 		IF AB{i} in ('3','C') THEN ABflag=ABflag+1; 
 		END;
-	if ABflag=13; 
+	if ABflag=7; 
 
 	* Part D;
 	ARRAY cd{60} $ ptd_cntrct_id_2015_01 - ptd_cntrct_id_2015_12
@@ -404,7 +404,7 @@ data cms.continuous_enrollment_amiloride;				* 57,093;
 		IF (substr(cd(i),1,1) in ('H','R','S','E') or substr(cd(i),1,2)='X0') THEN Dflag=Dflag+1; 
 	END;
 
-	if Dflag=13;
+	if Dflag=7;
 
 	* no HMO;
 	ARRAY hmo{60} $ hmo_ind_2015_01-hmo_ind_2015_12
@@ -418,7 +418,7 @@ data cms.continuous_enrollment_amiloride;				* 57,093;
 		IF hmo{i} in ('0') THEN hmoflag=hmoflag+1;  
 	END;
 
-	if hmoflag=13;
+	if hmoflag=7;
 
 	drop mdcr_entlmt_buyin_ind_2015_01 - mdcr_entlmt_buyin_ind_2015_12
 		 mdcr_entlmt_buyin_ind_2016_01 - mdcr_entlmt_buyin_ind_2016_12
