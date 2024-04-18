@@ -26,7 +26,7 @@ proc sql;
     select distinct a.bene_id
     from cms.enrollment_2016 as a, cms.drug_claims as b
     where a.bene_id = b.bene_id
-    and (a.index_date - 365) <= b.srvc_dt < a.index_date;
+    and (a.index_date - 180) <= b.srvc_dt < a.index_date;
 Quit;
 proc sql;
     create table cms.study_cohort as
