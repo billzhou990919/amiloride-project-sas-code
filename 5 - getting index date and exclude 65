@@ -6,19 +6,20 @@ proc sql;
     group by bene_id;
 quit;
 
-/* Step 2: Merge the earliest srvc_dt with the original dataset */
+/* Merge the earliest srvc_dt with the original dataset */
 data cms.all_drug_claims_index;
     merge cms.more_than_one_claims(in=a) cms.min_dates(in=b);
     by bene_id;
     if a;
 run;
 
-/* Cleanup: Delete the temporary min_dates dataset */
+
 proc datasets library=cms nolist;
     delete min_dates;
 run;
 quit;
 
+/*only keep those with age >= 66 at the time of index date*/
 data cms.exclude65;
     set cms.all_drug_claims_index;
     age = int((index_date - bene_birth_dt)/365.25);
