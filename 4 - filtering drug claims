@@ -5,6 +5,7 @@ run;
 proc sort data=cms.all_drug_claims;
     by bene_id;
 run;
+/*add birth date from mbsf to drug claims file*/
 data cms.all_drug_claimsv2;
     merge cms.all_drug_claims(in=a) cms.mbsfv2(in=b);
     by bene_id;
@@ -12,11 +13,7 @@ data cms.all_drug_claimsv2;
     if a;  
 Run;
 
-/*data cms.all_drug_claimsv3;
-    set cms.all_drug_claimsv2;
-    age = int((2017 - year(birth_date)));
-    if age >= 66;
-run;*/
+
 
 data cms.all_drug_claimsv3;
     set cms.all_drug_claimsv2;
@@ -44,7 +41,7 @@ data cms.all_drug_claimsv5;
    set cms.all_drug_claimsv4;
    by bene_id;
 
-   /* Retain the previous drug and change_start */
+
    retain prev_drug change_start change_flag;
 
    /* Initialize for the first row of each enrolid */
@@ -63,7 +60,7 @@ data cms.all_drug_claimsv5;
    /* Update the prev_comb for the next iteration */
    prev_drug = amiloride;
 
-   /* Optional: Create a flag variable to indicate an enrolid with changes */
+ 
    if last.bene_id and change_flag then change_detected = 1;
    else change_detected = 0;
 
@@ -75,7 +72,6 @@ data cms.unique_drug_user_switching;
    set cms.all_drug_claimsv5;
    by bene_id;
 
-   /* Retain only the last row for each bene_id */
    if last.bene_id then output;
 run;
 
