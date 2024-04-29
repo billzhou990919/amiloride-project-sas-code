@@ -34,6 +34,7 @@ Data cms.mbsf;
 Set cms.mbsf2015 cms.mbsf2016 cms.mbsf2017 cms.mbsf2018 cms.mbsf2019;
 run;
 
+/*getting rid of those who are not in the 20% sample group*/
 Data cms.mbsf;
 Set cms.mbsf;
 Where sample_group ne ‘ ‘;
