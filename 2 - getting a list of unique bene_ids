@@ -2,7 +2,7 @@ proc sort data=cms.all_drug_claims out=cms.unique_bene_ids nodupkey;
     by bene_id;
 run;
 
-/* Keep only the bene_id column */
+/*get a list of unique bene_ids*/
 data cms.unique_bene_ids;
     set cms.unique_bene_ids(keep=bene_id);
 run;
