@@ -3,12 +3,12 @@ proc sql;
     select * from cms.all_drug_claims
     where bene_id in (select bene_id from cms.study_cohort);
 quit;
-
+/* add end date of each drug dispensed*/
 Data cms.analytical_cohort;
 Set cms.analytical_cohort;
 Supp_end = srvc_dt + days_suply_num;
 run;
-
+/*get the discontinuation date of each individual*/
 proc sql;
     create table max_supp_end as
     select bene_id, max(supp_end) as discontinuation
@@ -16,22 +16,21 @@ proc sql;
     group by bene_id;
 quit;
 
-/* Step 2: Merge the max value with the original dataset */
+
 data cms.analytical_cohort;
     merge cms.study_cohort(in=a) max_supp_end(in=b);
     by bene_id;
 
-    /* Keep all rows from the original dataset */
     if a;
 run;
 
-/* Optional: Cleanup by deleting the temporary table */
+
 proc datasets library=work nolist;
     delete max_supp_end;
 run;
 Quit;
 
-
+/*one row per patient*/
 data cms.study_cohort;
    set cms.analytical_cohort;
    by bene_id;
@@ -51,14 +50,12 @@ quit;
 /*getting pd indicator and dx time*/
 proc sort data=cms.all_parkinson; by bene_id; run;
 
-/* Merge the summary dataset with all_bleeding based on enrolid */
 data cms.merged_dataset;
     merge cms.study_cohort(in=a) cms.all_parkinson(in=b);
     by bene_id;
     if a and b; /* This keeps only the matched records */
 run;
 
-/* Filter the rows based on the date conditions and create a new dataset */
 data cms.adverse_event;
     set cms.merged_dataset;
     format index_date discontinuation clm_from_dt mmddyy10.; /* Ensure dates are in the correct format */
@@ -70,12 +67,11 @@ Delete merged_dataset;
 Run;
 
 /*only keeping the first bleeding event*/
-/* Sort the dataset by enrolid and admdate */
+
 proc sort data=cms.adverse_event;
     by bene_id clm_from_dt;
 run;
 
-/* Keep only the first occurrence of each enrolid (i.e., the row with the earliest admdate) */
 data cms.adverse_event; 
     set cms.adverse_event;
     by bene_id;
@@ -83,7 +79,7 @@ data cms.adverse_event;
 run;
 
 
-
+/* get pd dx information for study cohort*/
 proc sql;
     create table cms.study_cohort_v2 as
     select a.*, b.clm_from_dt
