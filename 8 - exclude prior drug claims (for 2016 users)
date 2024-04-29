@@ -1,3 +1,4 @@
+/* exclude prevalent diuretics drug users*/
 proc sql;
    create table cms.amiloride_continuous_enrollment as
    select *
