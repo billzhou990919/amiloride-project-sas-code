@@ -161,7 +161,7 @@ proc sql;
    where bene_id not in (select bene_id from cms.to_exclude);
 quit;
 
-/* Delete intermediate datasets */
+
 proc datasets lib=cms nolist noprint;
    delete merged;
    delete to_exclude;
