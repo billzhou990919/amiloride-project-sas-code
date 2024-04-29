@@ -57,7 +57,7 @@ data cms.all_diuretics_2019;
     where upcase(bn) in: ('EPLERENONE', 'INSPRA', ‘SPIRONOLACTONE’, ‘ALDACTONE’, ‘CAROSPIR’, ‘TRIAMTERENE’, ‘DYRENIUM’) or upcase(gnn) in: ('EPLERENONE', 'INSPRA', ‘SPIRONOLACTONE’, ‘ALDACTONE’, ‘CAROSPIR’, ‘TRIAMTERENE’, ‘DYRENIUM’);
 Run;
 
-/*step 2: combine all amiloride claims and diuretics claims*/
+/*combine all amiloride claims and diuretics claims*/
 DATA cms.all_drug_claims;
     SET cms.all_amiloride_2014 cms.all_amiloride_2015 cms.all_amiloride_2016 cms.all_amiloride_2017 cms.all_amiloride_2018 cms.all_amiloride_2019  cms.all_diuretics_2014 cms.all_diuretics_2015 cms.all_diuretics_2016 
 cms.all_diuretics_2017 
