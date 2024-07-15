@@ -1,7 +1,7 @@
 
 
 //////////////////////////////////////////////////////////////////////////////
-proc sort data=cms.nopriorpd out=cms.no_prior_pd_unique nodupkey;
+proc sort data=cms.nootherpd out=cms.no_prior_pd_unique nodupkey;
     by bene_id;
 run;
 
