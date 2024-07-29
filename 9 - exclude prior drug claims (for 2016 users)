@@ -2,7 +2,7 @@
 proc sql;
    create table cms.amiloride_continuous_enrollment as
    select *
-   from cms.nopriorpd
+   from cms.nootherpd
    where bene_id in (select bene_id from cms.continuous_enrollment_amiloride);
 quit;
 
