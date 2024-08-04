@@ -97,8 +97,8 @@ run;
 data cms.study_cohort_v2; 
     set cms.study_cohort_v2;
     study_end = 21914;
-    censor_date = min(of discontinuation change_start clm_from_dt study_end);
-    format censor_date discontinuation index_date change_start clm_from_dt MMDDYY10.; 
+    censor_date = min(of clm_from_dt study_end);
+    format censor_date index_date clm_from_dt MMDDYY10.; 
 run;
 
 /*calculate survival time*/
@@ -128,6 +128,18 @@ data cms.study_cohort_v2;
   if upcase(gnn) in: (‘TRIAMTERENE’, ‘DYRENIUM’) or upcase(bn) in: (‘TRIAMTERENE’, ‘DYRENIUM’) then triamterene = 1;
   if amiloride = 0 then other_psdiuretics = 1;
 run;
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
