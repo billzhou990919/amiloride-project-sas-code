@@ -1,3 +1,8 @@
+Data cms.all_op_claims_2015;
+Set op15.outpatient_base_claims_k_2015;
+where bene_id in (select bene_id from cms.earliest_claims);
+Run;
+
 proc sql;
     create table cms.outpatient as
     select a.*, b.index_date
