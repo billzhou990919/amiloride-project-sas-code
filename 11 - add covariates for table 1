@@ -1,0 +1,74 @@
+proc sql;
+    create table cms.outpatient as
+    select a.*, b.index_date
+    from cms.outpatient as a
+    left join cms.analytical_cohort as b
+    on a.enrolid = b.enrolid;
+quit;
+proc sql;
+    create table mscan.inpatient as
+    select a.*, b.day0
+    from mscan.inpatient as a
+    left join mscan.analytical_cohort as b
+    on a.enrolid = b.enrolid;
+quit;
+
+
+
+/////////////////diabetes///////////
+data flag_diabetes;
+    set mscan.outpatient;
+    if (0 <= (day0 - svcdate) <=365) and (dx1 in: ('250', 'E08', 'E09', 'E10', 'E11', 'E13') or 
+        dx2 in: ('250', 'E08', 'E09', 'E10', 'E11', 'E13') or 
+        dx3 in: ('250', 'E08', 'E09', 'E10', 'E11', 'E13') or 
+        dx4 in: ('250', 'E08', 'E09', 'E10', 'E11', 'E13')) then flag = 1;
+    else flag = 0;
+    keep enrolid flag;
+run;
+proc sort data=flag_diabetes nodupkey;
+    by enrolid;
+    where flag = 1;
+run;
+data flag_diabetes_ip;
+    set mscan.inpatient;
+    if (0 <= (day0 - admdate) <=365) and (dx1 in: ('250', 'E08', 'E09', 'E10', 'E11', 'E13') or 
+        dx2 in: ('250', 'E08', 'E09', 'E10', 'E11', 'E13') or 
+        dx3 in: ('250', 'E08', 'E09', 'E10', 'E11', 'E13') or 
+        dx4 in: ('250', 'E08', 'E09', 'E10', 'E11', 'E13') or
+        dx5 in: ('250', 'E08', 'E09', 'E10', 'E11', 'E13') or
+        dx6 in: ('250', 'E08', 'E09', 'E10', 'E11', 'E13') or
+        dx7 in: ('250', 'E08', 'E09', 'E10', 'E11', 'E13') or
+        dx8 in: ('250', 'E08', 'E09', 'E10', 'E11', 'E13') or
+        dx9 in: ('250', 'E08', 'E09', 'E10', 'E11', 'E13') or
+        dx10 in: ('250', 'E08', 'E09', 'E10', 'E11', 'E13') or
+        dx11 in: ('250', 'E08', 'E09', 'E10', 'E11', 'E13') or
+        dx12 in: ('250', 'E08', 'E09', 'E10', 'E11', 'E13') or
+        dx13 in: ('250', 'E08', 'E09', 'E10', 'E11', 'E13') or
+        dx14 in: ('250', 'E08', 'E09', 'E10', 'E11', 'E13') or
+        dx15 in: ('250', 'E08', 'E09', 'E10', 'E11', 'E13')) then flag = 1;
+    else flag = 0;
+    keep enrolid flag;
+run;
+proc sort data=flag_diabetes_ip nodupkey;
+    by enrolid;
+    where flag = 1;
+run;
+data mscan.analytical_cohort;
+    merge mscan.analytical_cohort(in=a) flag_diabetes(in=b);
+    by enrolid;
+    if b then diabetes_op = 1;
+    else diabetes_op = 0;
+    drop flag;
+run;
+data mscan.analytical_cohort;
+    merge mscan.analytical_cohort(in=a) flag_diabetes_ip(in=b);
+    by enrolid;
+    if b then diabetes_ip = 1;
+    else diabetes_ip = 0;
+    drop flag;
+run;
+data mscan.analytical_cohort;
+    set mscan.analytical_cohort;
+    if (diabetes_ip = 1 or diabetes_op = 1) then diabetes = 1; else diabetes = 0;
+    drop diabetes_ip diabetes_op;
+run;
