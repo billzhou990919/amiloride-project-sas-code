@@ -305,7 +305,7 @@ run;
 /////////////////////dementia///////////////
 /*Dementia*/
 data flag_dementia;
-    set mscan.outpatient;
+    set cms.outpatient;
     if (0 <= (day0 - svcdate) <=365) and (dx1 in: ('290','2941','3312','F00','F01','F02','F03','G30','F051','G311')   or 
         dx2 in: ('290','2941','3312','F00','F01','F02','F03','G30','F051','G311')   or 
         dx3 in: ('290','2941','3312','F00','F01','F02','F03','G30','F051','G311')   or 
@@ -318,7 +318,7 @@ proc sort data=flag_dementia nodupkey;
     where flag = 1;
 run;
 data flag_dementia_ip;
-    set mscan.inpatient;
+    set cms.inpatient;
     if (0 <= (day0 - admdate) <=365) and (dx1 in: ('290','2941','3312','F00','F01','F02','F03','G30','F051','G311')   or 
         dx2 in: ('290','2941','3312','F00','F01','F02','F03','G30','F051','G311')   or 
         dx3 in: ('290','2941','3312','F00','F01','F02','F03','G30','F051','G311')   or 
@@ -341,22 +341,22 @@ proc sort data=flag_dementia_ip nodupkey;
     by enrolid;
     where flag = 1;
 run;
-data mscan.analytical_cohort;
-    merge mscan.analytical_cohort(in=a) flag_dementia(in=b);
+data cms.study_cohort_v2;
+    merge cms.study_cohort_v2(in=a) flag_dementia(in=b);
     by enrolid;
     if b then dementia_op = 1;
     else dementia_op = 0;
     drop flag;
 run;
-data mscan.analytical_cohort;
-    merge mscan.analytical_cohort(in=a) flag_dementia_ip(in=b);
+data cms.study_cohort_v2;
+    merge cms.study_cohort_v2(in=a) flag_dementia_ip(in=b);
     by enrolid;
     if b then dementia_ip = 1;
     else dementia_ip = 0;
     drop flag;
 run;
-data mscan.analytical_cohort;
-    set mscan.analytical_cohort;
+data cms.study_cohort_v2;
+    set cms.study_cohort_v2;
     if (dementia_ip = 1 or dementia_op = 1) then dementia = 1; else dementia = 0;
     drop dementia_ip dementia_op;
 run;
@@ -364,7 +364,7 @@ run;
 /////////////////COPD//////////////////
 /*COPD*/
 data flag_copd;
-    set mscan.outpatient;
+    set cms.outpatient;
     if (0 <= (day0 - svcdate) <=365) and (dx1 in: ('I278','I279','J684','J701','J703','J40','J41','J42','J43','J44','J45','J46','J47','J60','J61','J62','J63',
                          'J64','J65','J66','J67','4168','4169','5064','5081', '5088','490','491','492','493','494','495','496','500','501','502','503','504','505')   or 
         dx2 in: ('I278','I279','J684','J701','J703','J40','J41','J42','J43','J44','J45','J46','J47','J60','J61','J62','J63', 
@@ -381,7 +381,7 @@ proc sort data=flag_copd nodupkey;
     where flag = 1;
 run;
 data flag_copd_ip;
-    set mscan.inpatient;
+    set cms.inpatient;
     if (0 <= (day0 - admdate) <=365) and (dx1 in: ('I278','I279','J684','J701','J703','J40','J41','J42','J43','J44','J45','J46','J47',
 'J60','J61','J62','J63',  'J64','J65','J66','J67','4168','4169','5064','5081', '5088','490','491','492','493','494','495','496','500','501','502','503','504','505')   or 
         dx2 in: ('I278','I279','J684','J701','J703','J40','J41','J42','J43','J44','J45','J46','J47','J60','J61','J62','J63','J64','J65',
@@ -419,22 +419,22 @@ proc sort data=flag_copd_ip nodupkey;
     by enrolid;
     where flag = 1;
 run;
-data mscan.analytical_cohort;
-    merge mscan.analytical_cohort(in=a) flag_copd(in=b);
+data cms.study_cohort_v2;
+    merge cms.study_cohort_v2(in=a) flag_copd(in=b);
     by enrolid;
     if b then copd_op = 1;
     else copd_op = 0;
     drop flag;
 run;
-data mscan.analytical_cohort;
-    merge mscan.analytical_cohort(in=a) flag_copd_ip(in=b);
+data cms.study_cohort_v2;
+    merge cms.study_cohort_v2(in=a) flag_copd_ip(in=b);
     by enrolid;
     if b then copd_ip = 1;
     else copd_ip = 0;
     drop flag;
 run;
-data mscan.analytical_cohort;
-    set mscan.analytical_cohort;
+data cms.study_cohort_v2;
+    set cms.study_cohort_v2;
     if (copd_ip = 1 or copd_op = 1) then copd = 1; else copd = 0;
     drop copd_ip copd_op;
 run;
@@ -442,7 +442,7 @@ run;
 /////////////rheumatologic///////////////////
 /*rheumatologic*/
 data flag_rheumatologic;
-    set mscan.outpatient;
+    set cms.outpatient;
     if (0 <= (day0 - svcdate) <=365) and (dx1 in: ('7100','7101','7102','7103','7104','7148','725','M05','M32','M33','M34','M06','M315','M351','M353','M360','7140','7141','7142')   or 
         dx2 in: ('7100','7101','7102','7103','7104','7148','725','M05','M32','M33','M34','M06','M315','M351','M353','M360','7140','7141','7142')   or 
         dx3 in: ('7100','7101','7102','7103','7104','7148','725','M05','M32','M33','M34','M06','M315','M351','M353','M360','7140','7141','7142')   or 
@@ -455,7 +455,7 @@ proc sort data=flag_rheumatologic nodupkey;
     where flag = 1;
 run;
 data flag_rheumatologic_ip;
-    set mscan.inpatient;
+    set cms.inpatient;
     if (0 <= (day0 - admdate) <=365) and (dx1 in: ('7100','7101','7102','7103','7104','7148','725','M05','M32','M33','M34','M06','M315','M351','M353','M360','7140','7141','7142')   or 
         dx2 in: ('7100','7101','7102','7103','7104','7148','725','M05','M32','M33','M34','M06','M315','M351','M353','M360','7140','7141','7142')   or 
         dx3 in: ('7100','7101','7102','7103','7104','7148','725','M05','M32','M33','M34','M06','M315','M351','M353','M360','7140','7141','7142')   or 
@@ -478,22 +478,22 @@ proc sort data=flag_rheumatologic_ip nodupkey;
     by enrolid;
     where flag = 1;
 run;
-data mscan.analytical_cohort;
-    merge mscan.analytical_cohort(in=a) flag_rheumatologic(in=b);
+data cms.study_cohort_v2;
+    merge cms.study_cohort_v2(in=a) flag_rheumatologic(in=b);
     by enrolid;
     if b then rheumatologic_op = 1;
     else rheumatologic_op = 0;
     drop flag;
 run;
-data mscan.analytical_cohort;
-    merge mscan.analytical_cohort(in=a) flag_rheumatologic_ip(in=b);
+data cms.study_cohort_v2;
+    merge cms.study_cohort_v2(in=a) flag_rheumatologic_ip(in=b);
     by enrolid;
     if b then rheumatologic_ip = 1;
     else rheumatologic_ip = 0;
     drop flag;
 run;
-data mscan.analytical_cohort;
-    set mscan.analytical_cohort;
+data cms.study_cohort_v2;
+    set cms.study_cohort_v2;
     if (rheumatologic_ip = 1 or rheumatologic_op = 1) then rheumatologic = 1; else rheumatologic = 0;
     drop rheumatologic_ip rheumatologic_op;
 run;
@@ -501,7 +501,7 @@ run;
 ///////////////peptic ulcer//////////////
 /*Peptic Ulcer disease*/
 data flag_ulcer;
-    set mscan.outpatient;
+    set cms.outpatient;
     if (0 <= (day0 - svcdate) <=365) and (dx1 in: ('K25','K26','K27','K28','531','532','533','534')   or 
         dx2 in: ('K25','K26','K27','K28','531','532','533','534')   or 
         dx3 in: ('K25','K26','K27','K28','531','532','533','534')   or 
@@ -514,7 +514,7 @@ proc sort data=flag_ulcer nodupkey;
     where flag = 1;
 run;
 data flag_ulcer_ip;
-    set mscan.inpatient;
+    set cms.inpatient;
     if (0 <= (day0 - admdate) <=365) and (dx1 in: ('K25','K26','K27','K28','531','532','533','534')   or 
         dx2 in: ('K25','K26','K27','K28','531','532','533','534')   or 
         dx3 in: ('K25','K26','K27','K28','531','532','533','534')   or 
@@ -537,29 +537,29 @@ proc sort data=flag_ulcer_ip nodupkey;
     by enrolid;
     where flag = 1;
 run;
-data mscan.analytical_cohort;
-    merge mscan.analytical_cohort(in=a) flag_ulcer(in=b);
+data cms.study_cohort_v2;
+    merge cms.study_cohort_v2(in=a) flag_ulcer(in=b);
     by enrolid;
     if b then ulcer_op = 1;
     else ulcer_op = 0;
     drop flag;
 run;
-data mscan.analytical_cohort;
-    merge mscan.analytical_cohort(in=a) flag_ulcer_ip(in=b);
+data cms.study_cohort_v2;
+    merge cms.study_cohort_v2(in=a) flag_ulcer_ip(in=b);
     by enrolid;
     if b then ulcer_ip = 1;
     else ulcer_ip = 0;
     drop flag;
 run;
-data mscan.analytical_cohort;
-    set mscan.analytical_cohort;
+data cms.study_cohort_v2;
+    set cms.study_cohort_v2;
     if (ulcer_ip = 1 or ulcer_op = 1) then ulcer = 1; else ulcer = 0;
     drop ulcer_ip ulcer_op;
 run;
 //////////////////////liver///////////////
 /*Liver disease*/
 data flag_liver;
-    set mscan.outpatient;
+    set cms.outpatient;
     if (0 <= (day0 - svcdate) <=365) and (dx1 in: ('070','571','572','573','5768','4560','4561','4562','1550','1551', '1552', 'B15', 'B16', 'B17', 'B18', 'B19', 'C22', 'K70', 'K71', 'K72', 'K73', 'K74', 'K75', 'K76', 'K77', 'Z944', 'I982', 'D684C', 'Q618A')   or 
         dx2 in: ('070','571','572','573','5768','4560','4561','4562','1550','1551', '1552', 'B15', 'B16', 'B17', 'B18', 'B19', 'C22', 'K70', 'K71', 'K72', 'K73', 'K74', 'K75', 'K76', 'K77', 'Z944', 'I982', 'D684C', 'Q618A')   or 
         dx3 in: ('070','571','572','573','5768','4560','4561','4562','1550','1551', '1552', 'B15', 'B16', 'B17', 'B18', 'B19', 'C22', 'K70', 'K71', 'K72', 'K73', 'K74', 'K75', 'K76', 'K77', 'Z944', 'I982', 'D684C', 'Q618A')   or 
@@ -572,7 +572,7 @@ proc sort data=flag_liver nodupkey;
     where flag = 1;
 run;
 data flag_liver_ip;
-    set mscan.inpatient;
+    set cms.inpatient;
     if (0 <= (day0 - admdate) <=365) and (dx1 in: ('070','571','572','573','5768','4560','4561','4562','1550','1551', '1552', 'B15', 'B16', 'B17', 'B18', 'B19', 'C22', 'K70', 'K71', 'K72', 'K73', 'K74', 'K75', 'K76', 'K77', 'Z944', 'I982', 'D684C', 'Q618A')   or 
         dx2 in: ('070','571','572','573','5768','4560','4561','4562','1550','1551', '1552', 'B15', 'B16', 'B17', 'B18', 'B19', 'C22', 'K70', 'K71', 'K72', 'K73', 'K74', 'K75', 'K76', 'K77', 'Z944', 'I982', 'D684C', 'Q618A')   or 
         dx3 in: ('070','571','572','573','5768','4560','4561','4562','1550','1551', '1552', 'B15', 'B16', 'B17', 'B18', 'B19', 'C22', 'K70', 'K71', 'K72', 'K73', 'K74', 'K75', 'K76', 'K77', 'Z944', 'I982', 'D684C', 'Q618A')   or 
@@ -595,22 +595,22 @@ proc sort data=flag_liver_ip nodupkey;
     by enrolid;
     where flag = 1;
 run;
-data mscan.analytical_cohort;
-    merge mscan.analytical_cohort(in=a) flag_liver(in=b);
+data cms.study_cohort_v2;
+    merge cms.study_cohort_v2(in=a) flag_liver(in=b);
     by enrolid;
     if b then liver_op = 1;
     else liver_op = 0;
     drop flag;
 run;
-data mscan.analytical_cohort;
-    merge mscan.analytical_cohort(in=a) flag_liver_ip(in=b);
+data cms.study_cohort_v2;
+    merge cms.study_cohort_v2(in=a) flag_liver_ip(in=b);
     by enrolid;
     if b then liver_ip = 1;
     else liver_ip = 0;
     drop flag;
 run;
-data mscan.analytical_cohort;
-    set mscan.analytical_cohort;
+data cms.study_cohort_v2;
+    set cms.study_cohort_v2;
     if (liver_ip = 1 or liver_op = 1) then liver = 1; else liver = 0;
     drop liver_ip liver_op;
 run;
@@ -675,7 +675,7 @@ run;
 ///////////////////renal/kidney disease//////////////
 /*Chronic Kidney Disease*/
 data flag_ckd;
-    set mscan.outpatient;
+    set cms.outpatient;
     if (0 <= (day0 - svcdate) <=365) and (dx1 in: ('580','581','582', '583', '584', '585', '586', '587',  'N02', 'N03', 'N04', 'N05', 'N06', 'N07', 'N08', 'N11',  'N12',  'N14', 'N18', 'N19', 'N26', 'N158', 'N159',  'N160', 'N162', 'N163', 'N164', 'N168', 'Q612',  'Q613', 'Q615', 'Q619', 'E102', 'E112',  'E132',  'E142', 'I120', 'M300', 'M313', 'M319', 'M321B')   or 
         dx2 in: ('580','581','582', '583', '584', '585', '586', '587',  'N02', 'N03', 'N04', 'N05', 'N06', 'N07', 'N08', 'N11',  'N12',  'N14', 'N18', 'N19', 'N26', 'N158', 'N159',  'N160', 'N162', 'N163', 'N164', 'N168', 'Q612',  'Q613', 'Q615', 'Q619', 'E102', 'E112',  'E132',  'E142', 'I120', 'M300', 'M313', 'M319', 'M321B')   or 
         dx3 in: ('580','581','582', '583', '584', '585', '586', '587',  'N02', 'N03', 'N04', 'N05', 'N06', 'N07', 'N08', 'N11',  'N12',  'N14', 'N18', 'N19', 'N26', 'N158', 'N159',  'N160', 'N162', 'N163', 'N164', 'N168', 'Q612',  'Q613', 'Q615', 'Q619', 'E102', 'E112',  'E132',  'E142', 'I120', 'M300', 'M313', 'M319', 'M321B')   or 
@@ -688,7 +688,7 @@ proc sort data=flag_ckd nodupkey;
     where flag = 1;
 run;
 data flag_ckd_ip;
-    set mscan.inpatient;
+    set cms.inpatient;
     if (0 <= (day0 - admdate) <=365) and (dx1 in: ('580','581','582', '583', '584', '585', '586', '587',  'N02', 'N03', 'N04', 'N05', 'N06', 'N07', 'N08', 'N11',  'N12',  'N14', 'N18', 'N19', 'N26', 'N158', 'N159',  'N160', 'N162', 'N163', 'N164', 'N168', 'Q612',  'Q613', 'Q615', 'Q619', 'E102', 'E112',  'E132',  'E142', 'I120', 'M300', 'M313', 'M319', 'M321B')   or 
         dx2 in: ('580','581','582', '583', '584', '585', '586', '587',  'N02', 'N03', 'N04', 'N05', 'N06', 'N07', 'N08', 'N11',  'N12',  'N14', 'N18', 'N19', 'N26', 'N158', 'N159',  'N160', 'N162', 'N163', 'N164', 'N168', 'Q612',  'Q613', 'Q615', 'Q619', 'E102', 'E112',  'E132',  'E142', 'I120', 'M300', 'M313', 'M319', 'M321B')   or 
         dx3 in: ('580','581','582', '583', '584', '585', '586', '587',  'N02', 'N03', 'N04', 'N05', 'N06', 'N07', 'N08', 'N11',  'N12',  'N14', 'N18', 'N19', 'N26', 'N158', 'N159',  'N160', 'N162', 'N163', 'N164', 'N168', 'Q612',  'Q613', 'Q615', 'Q619', 'E102', 'E112',  'E132',  'E142', 'I120', 'M300', 'M313', 'M319', 'M321B')   or 
@@ -711,29 +711,29 @@ proc sort data=flag_ckd_ip nodupkey;
     by enrolid;
     where flag = 1;
 run;
-data mscan.analytical_cohort;
-    merge mscan.analytical_cohort(in=a) flag_ckd(in=b);
+data cms.study_cohort_v2;
+    merge cms.study_cohort_v2(in=a) flag_ckd(in=b);
     by enrolid;
     if b then ckd_op = 1;
     else ckd_op = 0;
     drop flag;
 run;
-data mscan.analytical_cohort;
-    merge mscan.analytical_cohort(in=a) flag_ckd_ip(in=b);
+data cms.study_cohort_v2;
+    merge cms.study_cohort_v2(in=a) flag_ckd_ip(in=b);
     by enrolid;
     if b then ckd_ip = 1;
     else ckd_ip = 0;
     drop flag;
 run;
-data mscan.analytical_cohort;
-    set mscan.analytical_cohort;
+data cms.study_cohort_v2;
+    set cms.study_cohort_v2;
     if (ckd_ip = 1 or ckd_op = 1) then ckd = 1; else ckd = 0;
     drop ckd_ip ckd_op;
 run;
 /////////////solid tumor/////////////
 /*Solid tumor*/
 data flag_solidtumor;
-    set mscan.outpatient;
+    set cms.outpatient;
     if (0 <= (day0 - svcdate) <=365) and (dx1 in: ('C77','C78','C79','C800','C801','C802','196','197','198','1990','1991','1992')   or 
         dx2 in: ('C77','C78','C79','C800','C801','C802','196','197','198','1990','1991','1992')   or 
         dx3 in: ('C77','C78','C79','C800','C801','C802','196','197','198','1990','1991','1992')   or 
@@ -746,7 +746,7 @@ proc sort data=flag_solidtumor nodupkey;
     where flag = 1;
 run;
 data flag_solidtumor_ip;
-    set mscan.inpatient;
+    set cms.inpatient;
     if (0 <= (day0 - admdate) <=365) and (dx1 in: ('C77','C78','C79','C800','C801','C802','196','197','198','1990','1991','1992')   or 
         dx2 in: ('C77','C78','C79','C800','C801','C802','196','197','198','1990','1991','1992')   or 
         dx3 in: ('C77','C78','C79','C800','C801','C802','196','197','198','1990','1991','1992')   or 
@@ -769,22 +769,22 @@ proc sort data=flag_solidtumor_ip nodupkey;
     by enrolid;
     where flag = 1;
 run;
-data mscan.analytical_cohort;
-    merge mscan.analytical_cohort(in=a) flag_solidtumor(in=b);
+data cms.study_cohort_v2;
+    merge cms.study_cohort_v2(in=a) flag_solidtumor(in=b);
     by enrolid;
     if b then solidtumor_op = 1;
     else solidtumor_op = 0;
     drop flag;
 run;
-data mscan.analytical_cohort;
-    merge mscan.analytical_cohort(in=a) flag_solidtumor_ip(in=b);
+data cms.study_cohort_v2;
+    merge cms.study_cohort_v2(in=a) flag_solidtumor_ip(in=b);
     by enrolid;
     if b then solidtumor_ip = 1;
     else solidtumor_ip = 0;
     drop flag;
 run;
-data mscan.analytical_cohort;
-    set mscan.analytical_cohort;
+data cms.study_cohort_v2;
+    set cms.study_cohort_v2;
     if (solidtumor_ip = 1 or solidtumor_op = 1) then solidtumor = 1; else solidtumor = 0;
     drop solidtumor_ip solidtumor_op;
 run;
@@ -792,7 +792,7 @@ run;
 //////////////////leukimia/maglinancy//////////////
 /*malignancy*/
 data flag_malignancy;
-    set mscan.outpatient;
+    set cms.outpatient;
     if (0 <= (day0 - svcdate) <=365) and (dx1 in: ('2386','C00','C01','C02','C03','C04','C05','C06','C07','C08','C09','C10','C11',
                          'C12','C13','C14','C15','C16','C17','C18','C19','C20','C21','C22','C23',
                          'C24','C25','C26','C30','C31','C32','C33','C34','C37','C38','C39','C40',
@@ -829,7 +829,7 @@ proc sort data=flag_malignancy nodupkey;
     where flag = 1;
 run;
 data flag_malignancy_ip;
-    set mscan.inpatient;
+    set cms.inpatient;
     if (0 <= (day0 - admdate) <=365) and (dx1 in: ('2386','C00','C01','C02','C03','C04','C05','C06','C07','C08','C09','C10','C11',
 'C12','C13','C14','C15','C16', 'C17','C18','C19','C20','C21','C22','C23', 'C24','C25','C26','C30','C31','C32','C33','C34','C37','C38',
 'C39','C40','C41','C43', 'C45','C46','C47','C48','C49','C50','C51','C52','C53','C54',   'C55','C56','C57','C58','C60','C61','C62','C63',
@@ -913,22 +913,22 @@ proc sort data=flag_malignancy_ip nodupkey;
     by enrolid;
     where flag = 1;
 run;
-data mscan.analytical_cohort;
-    merge mscan.analytical_cohort(in=a) flag_malignancy(in=b);
+data cms.study_cohort_v2;
+    merge cms.study_cohort_v2(in=a) flag_malignancy(in=b);
     by enrolid;
     if b then malignancy_op = 1;
     else malignancy_op = 0;
     drop flag;
 run;
-data mscan.analytical_cohort;
-    merge mscan.analytical_cohort(in=a) flag_malignancy_ip(in=b);
+data cms.study_cohort_v2;
+    merge cms.study_cohort_v2(in=a) flag_malignancy_ip(in=b);
     by enrolid;
     if b then malignancy_ip = 1;
     else malignancy_ip = 0;
     drop flag;
 run;
-data mscan.analytical_cohort;
-    set mscan.analytical_cohort;
+data cms.study_cohort_v2;
+    set cms.study_cohort_v2;
     if (malignancy_ip = 1 or malignancy_op = 1) then malignancy = 1; else malignancy = 0;
     drop malignancy_ip malignancy_op;
 run;
@@ -937,7 +937,7 @@ run;
 //////////////////AIDS///////////////
 /*AIDS*/
 data flag_aids;
-    set mscan.outpatient;
+    set cms.outpatient;
     if (0 <= (day0 - svcdate) <=365) and (dx1 in: ('B20','B21','B220','B221','B222', 'B24', '042','043','044')   or 
         dx2 in: ('B20','B21','B220','B221','B222', 'B24', '042','043','044')   or 
         dx3 in: ('B20','B21','B220','B221','B222', 'B24', '042','043','044')   or 
@@ -950,7 +950,7 @@ proc sort data=flag_aids nodupkey;
     where flag = 1;
 run;
 data flag_aids_ip;
-    set mscan.inpatient;
+    set cms.inpatient;
     if (0 <= (day0 - admdate) <=365) and (dx1 in: ('B20','B21','B220','B221','B222', 'B24', '042','043','044')   or 
         dx2 in: ('B20','B21','B220','B221','B222', 'B24', '042','043','044')   or 
         dx3 in: ('B20','B21','B220','B221','B222', 'B24', '042','043','044')   or 
@@ -973,22 +973,22 @@ proc sort data=flag_aids_ip nodupkey;
     by enrolid;
     where flag = 1;
 run;
-data mscan.analytical_cohort;
-    merge mscan.analytical_cohort(in=a) flag_aids(in=b);
+data cms.study_cohort_v2;
+    merge cms.study_cohort_v2(in=a) flag_aids(in=b);
     by enrolid;
     if b then aids_op = 1;
     else aids_op = 0;
     drop flag;
 run;
-data mscan.analytical_cohort;
-    merge mscan.analytical_cohort(in=a) flag_aids_ip(in=b);
+data cms.study_cohort_v2;
+    merge cms.study_cohort_v2(in=a) flag_aids_ip(in=b);
     by enrolid;
     if b then aids_ip = 1;
     else aids_ip = 0;
     drop flag;
 run;
-data mscan.analytical_cohort;
-    set mscan.analytical_cohort;
+data cms.study_cohort_v2;
+    set cms.study_cohort_v2;
     if (aids_ip = 1 or aids_op = 1) then aids = 1; else aids = 0;
     drop aids_ip aids_op;
 run;
