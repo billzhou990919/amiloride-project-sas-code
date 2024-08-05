@@ -19,3 +19,19 @@ proc freq data=cms.study_cohort_v2;
     table gnn;
 run;
 
+proc freq data=cms.study_cohort_v2;
+    tables amiloride * mi;
+run;
+
+proc freq data=cms.study_cohort_v2;
+    tables amiloride * chf;
+run;
+
+
+proc freq data=cms.study_cohort_v2;
+    tables amiloride * pvd;
+run;
+
+proc freq data=cms.study_cohort_v2;
+    tables amiloride * cerebro;
+run;
