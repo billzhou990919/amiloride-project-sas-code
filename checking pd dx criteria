@@ -62,7 +62,7 @@ quit;
 proc sql;
    create table cms.merged as
    select a.*, b.clm_from_dt
-   from cms.notherpd2 a
+   from cms.nootherpd2 a
    left join cms.all_parkinson b
    on a.bene_id = b.bene_id;
 quit;
@@ -79,7 +79,7 @@ quit;
 proc sql;
    create table cms.nopriorpd2 as
    select *
-   from cms.notherpd2
+   from cms.nootherpd2
    where bene_id not in (select bene_id from cms.to_exclude);
 quit;
 
