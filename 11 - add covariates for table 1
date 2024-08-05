@@ -1,50 +1,85 @@
-Data cms.all_op_claims_2015;
-Set op15.outpatient_base_claims_k_2015;
-where bene_id in (select bene_id from cms.study_cohort_v2);
-Run;
-Data cms.all_op_claims_2016;
-Set op16.outpatient_base_claims_k_2016;
-where bene_id in (select bene_id from cms.study_cohort_v2);
-Run;
+proc sql;
+    create table cms.all_op_claims_2015 as
+    select bene_id, clm_from_dt, prncpal_dgns_cd, icd_dgns_cd1, icd_dgns_cd2, icd_dgns_cd3, icd_dgns_cd4,icd_dgns_cd5
+,icd_dgns_cd6, icd_dgns_cd7, icd_dgns_cd8, icd_dgns_cd9, icd_dgns_cd10, icd_dgns_cd11, icd_dgns_cd12, icd_dgns_cd13, icd_dgns_cd14,
+icd_dgns_cd15, icd_dgns_cd16, icd_dgns_cd17, icd_dgns_cd18, icd_dgns_cd19, icd_dgns_cd20, icd_dgns_cd21, icd_dgns_cd22,
+icd_dgns_cd23, icd_dgns_cd24, icd_dgns_cd25 from op15.outpatient_base_claims_k_2015
+    where bene_id in (select bene_id from cms.study_cohort_v2);
+Quit;
+proc sql;
+    create table cms.all_op_claims_2016 as
+    select bene_id, clm_from_dt, prncpal_dgns_cd, icd_dgns_cd1, icd_dgns_cd2, icd_dgns_cd3, icd_dgns_cd4,icd_dgns_cd5
+,icd_dgns_cd6, icd_dgns_cd7, icd_dgns_cd8, icd_dgns_cd9, icd_dgns_cd10, icd_dgns_cd11, icd_dgns_cd12, icd_dgns_cd13, icd_dgns_cd14,
+icd_dgns_cd15, icd_dgns_cd16, icd_dgns_cd17, icd_dgns_cd18, icd_dgns_cd19, icd_dgns_cd20, icd_dgns_cd21, icd_dgns_cd22,
+icd_dgns_cd23, icd_dgns_cd24, icd_dgns_cd25 from op16.outpatient_base_claims_k_2016
+    where bene_id in (select bene_id from cms.study_cohort_v2);
+Quit;
+proc sql;
+    create table cms.all_op_claims_2017 as
+    select bene_id, clm_from_dt, prncpal_dgns_cd, icd_dgns_cd1, icd_dgns_cd2, icd_dgns_cd3, icd_dgns_cd4,icd_dgns_cd5
+,icd_dgns_cd6, icd_dgns_cd7, icd_dgns_cd8, icd_dgns_cd9, icd_dgns_cd10, icd_dgns_cd11, icd_dgns_cd12, icd_dgns_cd13, icd_dgns_cd14,
+icd_dgns_cd15, icd_dgns_cd16, icd_dgns_cd17, icd_dgns_cd18, icd_dgns_cd19, icd_dgns_cd20, icd_dgns_cd21, icd_dgns_cd22,
+icd_dgns_cd23, icd_dgns_cd24, icd_dgns_cd25 from op17.outpatient_base_claims_k_2017
+    where bene_id in (select bene_id from cms.study_cohort_v2);
+Quit;
+proc sql;
+    create table cms.all_op_claims_2018 as
+    select bene_id, clm_from_dt, prncpal_dgns_cd, icd_dgns_cd1, icd_dgns_cd2, icd_dgns_cd3, icd_dgns_cd4,icd_dgns_cd5
+,icd_dgns_cd6, icd_dgns_cd7, icd_dgns_cd8, icd_dgns_cd9, icd_dgns_cd10, icd_dgns_cd11, icd_dgns_cd12, icd_dgns_cd13, icd_dgns_cd14,
+icd_dgns_cd15, icd_dgns_cd16, icd_dgns_cd17, icd_dgns_cd18, icd_dgns_cd19, icd_dgns_cd20, icd_dgns_cd21, icd_dgns_cd22,
+icd_dgns_cd23, icd_dgns_cd24, icd_dgns_cd25 from op18.outpatient_base_claims_k_2018
+    where bene_id in (select bene_id from cms.study_cohort_v2);
+Quit;
+proc sql;
+    create table cms.all_op_claims_2019 as
+    select bene_id, clm_from_dt, prncpal_dgns_cd, icd_dgns_cd1, icd_dgns_cd2, icd_dgns_cd3, icd_dgns_cd4,icd_dgns_cd5
+,icd_dgns_cd6, icd_dgns_cd7, icd_dgns_cd8, icd_dgns_cd9, icd_dgns_cd10, icd_dgns_cd11, icd_dgns_cd12, icd_dgns_cd13, icd_dgns_cd14,
+icd_dgns_cd15, icd_dgns_cd16, icd_dgns_cd17, icd_dgns_cd18, icd_dgns_cd19, icd_dgns_cd20, icd_dgns_cd21, icd_dgns_cd22,
+icd_dgns_cd23, icd_dgns_cd24, icd_dgns_cd25 from op19.outpatient_base_claims_k_2019
+    where bene_id in (select bene_id from cms.study_cohort_v2);
+Quit;
 
-Data cms.all_op_claims_2017;
-Set op17.outpatient_base_claims_k_2017;
-where bene_id in (select bene_id from cms.study_cohort_v2);
-Run;
 
-Data cms.all_op_claims_2018;
-Set op18.outpatient_base_claims_k_2018;
-where bene_id in (select bene_id from cms.study_cohort_v2);
-Run;
-
-Data cms.all_op_claims_2019;
-Set op19.outpatient_base_claims_k_2019;
-where bene_id in (select bene_id from cms.study_cohort_v2);
-Run;
-
-Data cms.all_ip_claims_2015;
-Set ip15.inpatient_base_claims_k_2015;
-where bene_id in (select bene_id from cms.study_cohort_v2);
-Run;
-Data cms.all_ip_claims_2016;
-Set ip16.inpatient_base_claims_k_2016;
-where bene_id in (select bene_id from cms.study_cohort_v2);
-Run;
-
-Data cms.all_ip_claims_2017;
-Set ip17.inpatient_base_claims_k_2017;
-where bene_id in (select bene_id from cms.study_cohort_v2);
-Run;
-
-Data cms.all_ip_claims_2018;
-Set ip18.inpatient_base_claims_k_2018;
-where bene_id in (select bene_id from cms.study_cohort_v2);
-Run;
-
-Data cms.all_ip_claims_2019;
-Set ip19.inpatient_base_claims_k_2019;
-where bene_id in (select bene_id from cms.study_cohort_v2);
-Run;
+proc sql;
+    create table cms.all_ip_claims_2015 as
+    select bene_id, clm_from_dt, admtg_dgns_cd, prncpal_dgns_cd, icd_dgns_cd1, icd_dgns_cd2, icd_dgns_cd3, icd_dgns_cd4,icd_dgns_cd5
+,icd_dgns_cd6, icd_dgns_cd7, icd_dgns_cd8, icd_dgns_cd9, icd_dgns_cd10, icd_dgns_cd11, icd_dgns_cd12, icd_dgns_cd13, icd_dgns_cd14,
+icd_dgns_cd15, icd_dgns_cd16, icd_dgns_cd17, icd_dgns_cd18, icd_dgns_cd19, icd_dgns_cd20, icd_dgns_cd21, icd_dgns_cd22,
+icd_dgns_cd23, icd_dgns_cd24, icd_dgns_cd25 from ip15.inpatient_base_claims_k_2015
+    where bene_id in (select bene_id from cms.study_cohort_v2);
+Quit;
+proc sql;
+    create table cms.all_ip_claims_2016 as
+    select bene_id, clm_from_dt, admtg_dgns_cd,  prncpal_dgns_cd, icd_dgns_cd1, icd_dgns_cd2, icd_dgns_cd3, icd_dgns_cd4,icd_dgns_cd5
+,icd_dgns_cd6, icd_dgns_cd7, icd_dgns_cd8, icd_dgns_cd9, icd_dgns_cd10, icd_dgns_cd11, icd_dgns_cd12, icd_dgns_cd13, icd_dgns_cd14,
+icd_dgns_cd15, icd_dgns_cd16, icd_dgns_cd17, icd_dgns_cd18, icd_dgns_cd19, icd_dgns_cd20, icd_dgns_cd21, icd_dgns_cd22,
+icd_dgns_cd23, icd_dgns_cd24, icd_dgns_cd25 from ip16.inpatient_base_claims_k_2016
+    where bene_id in (select bene_id from cms.study_cohort_v2);
+Quit;
+proc sql;
+    create table cms.all_ip_claims_2017 as
+    select bene_id, clm_from_dt, admtg_dgns_cd, prncpal_dgns_cd, icd_dgns_cd1, icd_dgns_cd2, icd_dgns_cd3, icd_dgns_cd4,icd_dgns_cd5
+,icd_dgns_cd6, icd_dgns_cd7, icd_dgns_cd8, icd_dgns_cd9, icd_dgns_cd10, icd_dgns_cd11, icd_dgns_cd12, icd_dgns_cd13, icd_dgns_cd14,
+icd_dgns_cd15, icd_dgns_cd16, icd_dgns_cd17, icd_dgns_cd18, icd_dgns_cd19, icd_dgns_cd20, icd_dgns_cd21, icd_dgns_cd22,
+icd_dgns_cd23, icd_dgns_cd24, icd_dgns_cd25 from ip17.inpatient_base_claims_k_2017
+    where bene_id in (select bene_id from cms.study_cohort_v2);
+Quit;
+proc sql;
+    create table cms.all_ip_claims_2018 as
+    select bene_id, clm_from_dt, admtg_dgns_cd, prncpal_dgns_cd, icd_dgns_cd1, icd_dgns_cd2, icd_dgns_cd3, icd_dgns_cd4,icd_dgns_cd5
+,icd_dgns_cd6, icd_dgns_cd7, icd_dgns_cd8, icd_dgns_cd9, icd_dgns_cd10, icd_dgns_cd11, icd_dgns_cd12, icd_dgns_cd13, icd_dgns_cd14,
+icd_dgns_cd15, icd_dgns_cd16, icd_dgns_cd17, icd_dgns_cd18, icd_dgns_cd19, icd_dgns_cd20, icd_dgns_cd21, icd_dgns_cd22,
+icd_dgns_cd23, icd_dgns_cd24, icd_dgns_cd25 from ip18.inpatient_base_claims_k_2018
+    where bene_id in (select bene_id from cms.study_cohort_v2);
+Quit;
+proc sql;
+    create table cms.all_ip_claims_2019 as
+    select bene_id, clm_from_dt, admtg_dgns_cd, prncpal_dgns_cd, icd_dgns_cd1, icd_dgns_cd2, icd_dgns_cd3, icd_dgns_cd4,icd_dgns_cd5
+,icd_dgns_cd6, icd_dgns_cd7, icd_dgns_cd8, icd_dgns_cd9, icd_dgns_cd10, icd_dgns_cd11, icd_dgns_cd12, icd_dgns_cd13, icd_dgns_cd14,
+icd_dgns_cd15, icd_dgns_cd16, icd_dgns_cd17, icd_dgns_cd18, icd_dgns_cd19, icd_dgns_cd20, icd_dgns_cd21, icd_dgns_cd22,
+icd_dgns_cd23, icd_dgns_cd24, icd_dgns_cd25 from ip19.inpatient_base_claims_k_2019
+    where bene_id in (select bene_id from cms.study_cohort_v2);
+Quit;
 
 
 data cms.outpatient;
