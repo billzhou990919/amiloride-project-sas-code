@@ -1,0 +1,104 @@
+data _null_;
+    set cms.exclude65    nobs=nobs_var;
+    call symput('obs_count', nobs_var);
+    stop;
+run;
+
+proc sql noprint;
+    select count(distinct bene_id) into :unique_patients
+    from cms.exclude65;
+quit;
+
+%put Number of Observations: &obs_count;
+%put Number of Unique Patients (bene_id): &unique_patients;
+
+
+proc sql;
+   create table cms.merged as
+   select a.*, b.clm_from_dt
+   from cms.exclude65 a
+   left join cms.all_other_parkinson b
+   on a.bene_id = b.bene_id;
+quit;
+
+/* Identify individuals to exclude */
+proc sql;
+   create table cms.to_exclude as
+   select distinct bene_id
+   from cms.merged
+   where intck('month', clm_from_dt, index_date) between -6 and 0;
+quit;
+
+/* Exclude the identified individuals from exclude65 */
+proc sql;
+   create table cms.nootherpd2 as
+   select *
+   from cms.exclude65
+   where bene_id not in (select bene_id from cms.to_exclude);
+quit;
+
+
+proc datasets lib=cms nolist noprint;
+   delete merged;
+   delete to_exclude;
+Quit;
+
+data _null_;
+    set cms.nootherpd2    nobs=nobs_var;
+    call symput('obs_count', nobs_var);
+    stop;
+run;
+
+proc sql noprint;
+    select count(distinct bene_id) into :unique_patients
+    from cms.nootherpd2;
+quit;
+
+%put Number of Observations: &obs_count;
+%put Number of Unique Patients (bene_id): &unique_patients;
+
+
+/*delete all rows with pd dx 6 months prior to index_date */
+proc sql;
+   create table cms.merged as
+   select a.*, b.clm_from_dt
+   from cms.notherpd2 a
+   left join cms.all_parkinson b
+   on a.bene_id = b.bene_id;
+quit;
+
+/* Identify individuals to exclude */
+proc sql;
+   create table cms.to_exclude as
+   select distinct bene_id
+   from cms.merged
+   where intck('month', clm_from_dt, index_date) between -6 and 0;
+quit;
+
+/* Exclude the identified individuals from exclude65 */
+proc sql;
+   create table cms.nopriorpd2 as
+   select *
+   from cms.notherpd2
+   where bene_id not in (select bene_id from cms.to_exclude);
+quit;
+
+
+proc datasets lib=cms nolist noprint;
+   delete merged;
+   delete to_exclude;
+Quit;
+
+data _null_;
+    set cms.nopriorpd2    nobs=nobs_var;
+    call symput('obs_count', nobs_var);
+    stop;
+run;
+
+proc sql noprint;
+    select count(distinct bene_id) into :unique_patients
+    from cms.nopriorpd2;
+quit;
+
+%put Number of Observations: &obs_count;
+%put Number of Unique Patients (bene_id): &unique_patients;
