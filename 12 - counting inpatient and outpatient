@@ -1,0 +1,32 @@
+proc sql;
+    create table cms.inpatient_final as
+    select * from cms.inpatient
+    where bene_id in (select bene_id from cms.study_cohort_v2);
+quit;
+
+/* Merge datasets and count records */
+proc sql;
+    create table combined as
+    select a.bene_id, a.index_date, b.admdate
+    from cms.study_cohort_v2 as a
+    left join cms.inpatient_final as b
+    on a.bene_id = b.bene_id
+    where intck('month', b.admdate, a.index_date) < 6 and b.admdate < a.index_date;
+quit;
+
+/* Counting the inpatient records for each bene_id */
+proc sql;
+    create table final_count as
+    select bene_id, count(admdate) as inpatient_count
+    from combined
+    group by bene_id;
+quit;
+
+/* Merging the count back with the original analytical_cohort dataset */
+proc sql;
+    create table cms.study_cohort_v2 as
+    select a.*, coalesce(b.inpatient_count, 0) as inpatient_count
+    from cms.study_cohort_v2 as a
+    left join final_count as b
+    on a.bene_id = b.bene_id;
+quit;
